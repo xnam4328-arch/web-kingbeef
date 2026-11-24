@@ -1,0 +1,17 @@
+{
+  "name": "kingbeef-restaurant",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KingBeef (Steak & Pasta House) - 3D Table Reservation & Restaurant Management System",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"yellow,cyan\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "setup": "npm install && npm install --prefix server && npm install --prefix client && npm run db:setup --prefix server",
+    "db:setup": "npm run db:setup --prefix server",
+    "seed": "npm run seed --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

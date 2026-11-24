@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #0b0b0e;
+    color: #f5f0e6;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-[#16161C]/80 backdrop-blur-xl border border-[#D4AF37]/20 rounded-2xl shadow-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-[#D4AF37]/50 hover:shadow-gold;
+  }
+
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
+           bg-gradient-to-r from-[#D4AF37] via-[#E5C558] to-[#B89225] text-[#0B0B0E]
+           shadow-gold transition-all duration-200 hover:brightness-110 active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline-gold {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm
+           border border-[#D4AF37]/50 text-[#D4AF37] bg-[#16161C]/60
+           transition-all duration-200 hover:bg-[#D4AF37]/15 hover:border-[#D4AF37]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-luxury {
+    @apply w-full px-4 py-2.5 rounded-xl bg-[#0B0B0E]/80 border border-white/10 text-[#F5F0E6]
+           placeholder:text-[#F5F0E6]/35 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/50
+           transition-colors;
+  }
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0b0e;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b2b36;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d4af37;
+}

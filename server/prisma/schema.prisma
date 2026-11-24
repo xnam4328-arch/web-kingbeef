@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Branch {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique // "Tân Bình", "Gò Vấp"
+  address      String
+  phone        String
+
+  halls        Hall[]
+  users        User[]
+  reservations Reservation[]
+}
+
+model Hall {
+  id           Int           @id @default(autoincrement())
+  branchId     Int
+  name         String        // Classic, Gallery, Train to Love, Sweet, Love, VIP, Mây
+  type         String        // "indoor" | "outdoor" | "vip"
+  description  String
+
+  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tables       Table[]
+  reservations Reservation[]
+
+  @@unique([branchId, name])
+}
+
+model Table {
+  id           Int           @id @default(autoincrement())
+  hallId       Int
+  tableNumber  Int
+  capacity     Int           @default(4)
+  posX         Float
+  posY         Float         @default(0)
+  posZ         Float
+  status       String        @default("available") // "available" | "maintenance"
+
+  hall         Hall          @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+
+  @@unique([hallId, tableNumber])
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  fullName     String
+  email        String        @unique
+  phone        String
+  passwordHash String
+  role         String        @default("customer") // "customer" | "staff" | "cashier" | "admin"
+  branchId     Int?
+  createdAt    DateTime      @default(now())
+
+  branch       Branch?       @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  reservations Reservation[]
+}
+
+model MenuItem {
+  id                        Int               @id @default(autoincrement())
+  name                      String
+  category                  String
+  description               String
+  price                     Int
+  imageUrl                  String?
+  badge                     String?
+  stockQuantity             Int               @default(50)
+  isAvailable               Boolean           @default(true)
+  requiresAdvanceOrderHours Int               @default(0)
+
+  reservationItems          ReservationItem[]
+}
+
+model Reservation {
+  id              Int               @id @default(autoincrement())
+  bookingCode     String            @unique
+  userId          Int
+  branchId        Int
+  hallId          Int
+  tableId         Int
+  reservationDate String            // "YYYY-MM-DD"
+  startTime       String            // "HH:mm"
+  endTime         String            // "HH:mm" (+2 hours)
+  guestCount      Int
+  hasWinePromo    Boolean           @default(false)
+  totalAmount     Int               @default(0)
+  depositAmount   Int
+  depositStatus   String            @default("unpaid")  // "unpaid" | "waiting_confirm" | "paid"
+  status          String            @default("pending") // "pending" | "waiting_deposit_confirm" | "confirmed" | "checked_in" | "completed" | "cancelled"
+  specialRequest  String?
+  createdAt       DateTime          @default(now())
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  branch          Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  hall            Hall              @relation(fields: [hallId], references: [id], onDelete: Restrict)
+  table           Table             @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  items           ReservationItem[]
+
+  @@index([branchId, reservationDate])
+  @@index([tableId, reservationDate, status])
+}
+
+model ReservationItem {
+  id            Int         @id @default(autoincrement())
+  reservationId Int
+  menuItemId    Int
+  quantity      Int
+  unitPrice     Int
+
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  menuItem      MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+}
