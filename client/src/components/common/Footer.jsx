@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Crown, MapPin, Phone, Clock, ExternalLink } from 'lucide-react';
+import { MapPin, Phone, Clock, ExternalLink } from 'lucide-react';
 import VatNotice from './VatNotice';
 import { HOTLINE_DISPLAY, HOTLINE_TEL, getGoogleMapsUrl } from '../../utils/format';
 
@@ -8,19 +8,13 @@ export default function Footer() {
     <footer className="border-t border-[#4A0E1E] bg-[#08080B] mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#B8254E] via-[#9E1B32] to-[#4A0E1E] flex items-center justify-center shadow-wine">
-              <Crown className="w-5 h-5 text-[#F5F0E6]" />
-            </div>
-            <div>
-              <div className="font-serif text-lg font-bold tracking-wider">
-                KING<span className="text-[#C83254]">BEEF</span>
-              </div>
-              <div className="text-[10px] tracking-[0.2em] uppercase text-[#F5F0E6]/50">
-                Steak &amp; Pasta House
-              </div>
-            </div>
-          </div>
+          <Link to="/" className="inline-block mb-4">
+            <img
+              src={`${import.meta.env.BASE_URL}images/kingbeef-logo.png`}
+              alt="KingBeef — Steak & Pasta House"
+              className="h-16 w-auto object-contain"
+            />
+          </Link>
           <p className="text-sm text-[#F5F0E6]/65 leading-relaxed mb-4">
             Nghệ thuật ẩm thực Âu tinh tế với Steak thượng hạng, Pasta thủ công và không gian kiến trúc
             Dark Luxury sắc Đỏ rượu vang quyến rũ bậc nhất Sài Gòn.

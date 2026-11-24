@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import {
-  Crown,
   Menu,
   X,
   User,
@@ -33,19 +32,13 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#0B0B0E]/90 backdrop-blur-xl border-b border-[#4A0E1E]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#B8254E] via-[#9E1B32] to-[#4A0E1E] flex items-center justify-center shadow-wine group-hover:scale-105 transition-transform">
-            <Crown className="w-5 h-5 text-[#F5F0E6]" />
-          </div>
-          <div>
-            <div className="font-serif text-xl font-bold tracking-wider text-[#F5F0E6]">
-              KING<span className="text-[#C83254]">BEEF</span>
-            </div>
-            <div className="text-[10px] tracking-[0.22em] uppercase text-[#F5F0E6]/55">
-              Steak &amp; Pasta House
-            </div>
-          </div>
+        {/* Brand Logo */}
+        <Link to="/" className="flex items-center group shrink-0">
+          <img
+            src={`${import.meta.env.BASE_URL}images/kingbeef-logo.png`}
+            alt="KingBeef — Steak & Pasta House"
+            className="h-12 sm:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
+          />
         </Link>
 
         {/* Desktop Nav */}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Crown, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const DEMO_ACCOUNTS = [
@@ -43,9 +43,11 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md glass-card p-8">
         <div className="text-center mb-7">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8254E] via-[#9E1B32] to-[#4A0E1E] flex items-center justify-center mx-auto mb-3 shadow-wine">
-            <Crown className="w-6 h-6 text-[#F5F0E6]" />
-          </div>
+          <img
+            src={`${import.meta.env.BASE_URL}images/kingbeef-logo.png`}
+            alt="KingBeef — Steak & Pasta House"
+            className="h-20 w-auto object-contain mx-auto mb-3"
+          />
           <h1 className="text-3xl font-serif font-bold text-[#F5F0E6]">Đăng Nhập</h1>
           <p className="text-xs text-[#F5F0E6]/60 mt-1">
             Chào mừng trở lại KingBeef Steak &amp; Pasta House
