@@ -49,72 +49,76 @@ export default function HomePage() {
 
   return (
     <div className="overflow-x-hidden">
-      {/* HERO 3D */}
-      <section className="relative min-h-[88vh] flex items-center">
-        <div className="absolute inset-0 z-0">
-          <HeroScene3D />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0B0B0E] via-[#0B0B0E]/75 to-transparent" />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B0B0E] via-transparent to-[#0B0B0E]/40" />
-        </div>
+      {/* HERO BEEF WELLINGTON + SMOKE */}
+      <section className="relative min-h-[84vh] flex items-center overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_45%,rgba(158,27,50,0.22),transparent_60%),radial-gradient(ellipse_at_20%_80%,rgba(74,14,30,0.35),transparent_55%)]" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-          <div className="max-w-2xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#4A0E1E]/75 border border-[#9E1B32]/70 text-[#F5F0E6] text-xs font-semibold tracking-widest uppercase">
-              <Sparkles className="w-3.5 h-3.5 text-[#E86B86]" />
-              KingBeef • Steak &amp; Pasta House
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl font-serif font-bold leading-[1.2] text-[#F5F0E6]">
-              Chúng tôi tin rằng một bữa ăn ngon luôn xứng đáng với{' '}
-              <span className="text-[#C83254]">một cuộc gặp gỡ đáng nhớ.</span>
-            </h1>
-
-            <div className="space-y-3 text-base sm:text-lg text-[#F5F0E6]/80 leading-relaxed">
-              <p>
-                Kingbeef mang đến những trải nghiệm ẩm thực được chăm chút từ hương vị, cách trình
-                bày đến không gian và dịch vụ, với mức giá để nhiều người có thể tận hưởng.
-              </p>
-              <p>
-                Để mỗi lần gặp gỡ không chỉ là một bữa tối, mà còn là một lý do để quay lại.
-              </p>
-            </div>
-
-            <div className="border-l-2 border-[#C83254] pl-4 py-0.5">
-              <p className="font-serif italic text-xl sm:text-2xl font-bold text-[#E86B86] tracking-wide">
-                Kingbeef – Ngon là để gặp lại!
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
-              <Link to="/booking" className="btn-wine px-7 py-3.5 text-base">
-                Chọn bàn 3D ngay
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link to="/menu" className="btn-outline-wine px-6 py-3.5 text-base">
-                Khám phá thực đơn
-              </Link>
-              <Link
-                to="/lookup"
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl text-sm font-medium text-[#E86B86] hover:text-[#F5F0E6] transition-colors"
-              >
-                <Search className="w-4 h-4" />
-                Tra cứu đơn đã đặt
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 pt-6 max-w-lg border-t border-[#4A0E1E]">
-              <div>
-                <div className="font-serif text-2xl font-bold text-[#E86B86]">02</div>
-                <div className="text-xs text-[#F5F0E6]/60">Chi nhánh trung tâm</div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 lg:py-20 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* Cot trai: Slogan & CTA */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#4A0E1E]/75 border border-[#9E1B32]/70 text-[#F5F0E6] text-xs font-semibold tracking-widest uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-[#E86B86]" />
+                KingBeef • Steak &amp; Pasta House
               </div>
-              <div>
-                <div className="font-serif text-2xl font-bold text-[#E86B86]">07</div>
-                <div className="text-xs text-[#F5F0E6]/60">Sảnh tiệc đa phong cách</div>
+
+              <h1 className="text-3xl sm:text-5xl font-serif font-bold leading-[1.2] text-[#F5F0E6]">
+                Chúng tôi tin rằng một bữa ăn ngon luôn xứng đáng với{' '}
+                <span className="text-[#C83254]">một cuộc gặp gỡ đáng nhớ.</span>
+              </h1>
+
+              <div className="space-y-3 text-base sm:text-lg text-[#F5F0E6]/80 leading-relaxed">
+                <p>
+                  Kingbeef mang đến những trải nghiệm ẩm thực được chăm chút từ hương vị, cách trình
+                  bày đến không gian và dịch vụ, với mức giá để nhiều người có thể tận hưởng.
+                </p>
+                <p>
+                  Để mỗi lần gặp gỡ không chỉ là một bữa tối, mà còn là một lý do để quay lại.
+                </p>
               </div>
-              <div>
-                <div className="font-serif text-2xl font-bold text-[#E86B86]">52+</div>
-                <div className="text-xs text-[#F5F0E6]/60">Tuyệt phẩm ẩm thực Âu</div>
+
+              <div className="border-l-2 border-[#C83254] pl-4 py-0.5">
+                <p className="font-serif italic text-xl sm:text-2xl font-bold text-[#E86B86] tracking-wide">
+                  Kingbeef – Ngon là để gặp lại!
+                </p>
               </div>
+
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <Link to="/booking" className="btn-wine px-7 py-3.5 text-base">
+                  Chọn bàn 3D ngay
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link to="/menu" className="btn-outline-wine px-6 py-3.5 text-base">
+                  Khám phá thực đơn
+                </Link>
+                <Link
+                  to="/lookup"
+                  className="inline-flex items-center gap-2 px-4 py-3.5 rounded-xl text-sm font-medium text-[#E86B86] hover:text-[#F5F0E6] transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                  Tra cứu đơn đã đặt
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 pt-6 max-w-lg border-t border-[#4A0E1E]">
+                <div>
+                  <div className="font-serif text-2xl font-bold text-[#E86B86]">02</div>
+                  <div className="text-xs text-[#F5F0E6]/60">Chi nhánh trung tâm</div>
+                </div>
+                <div>
+                  <div className="font-serif text-2xl font-bold text-[#E86B86]">07</div>
+                  <div className="text-xs text-[#F5F0E6]/60">Sảnh tiệc đa phong cách</div>
+                </div>
+                <div>
+                  <div className="font-serif text-2xl font-bold text-[#E86B86]">52+</div>
+                  <div className="text-xs text-[#F5F0E6]/60">Tuyệt phẩm ẩm thực Âu</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Cot phai: Anh Beef Wellington Premium + Hieu ung khoi nong dong */}
+            <div className="lg:col-span-6">
+              <HeroScene3D />
             </div>
           </div>
         </div>
