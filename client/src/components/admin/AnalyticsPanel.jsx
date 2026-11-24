@@ -49,7 +49,7 @@ export default function AnalyticsPanel({ branches = [] }) {
 
   const tooltipStyle = {
     backgroundColor: '#0B0B0E',
-    borderColor: 'rgba(212, 175, 55, 0.45)',
+    borderColor: '#9E1B32',
     borderRadius: '12px',
     color: '#F5F0E6',
     fontSize: '12px',
@@ -57,10 +57,9 @@ export default function AnalyticsPanel({ branches = [] }) {
 
   return (
     <div className="space-y-6">
-      {/* Bo loc Chi nhanh & Thoi gian */}
       <div className="glass-card p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif font-bold text-[#D4AF37]">
+          <h2 className="text-xl font-serif font-bold text-[#E86B86]">
             {isCashier ? 'Báo Cáo Doanh Thu Trong Ngày' : 'Thống Kê & Biểu Đồ Hoạt Động'}
           </h2>
           <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
@@ -87,7 +86,7 @@ export default function AnalyticsPanel({ branches = [] }) {
           </select>
 
           {!isCashier ? (
-            <div className="inline-flex rounded-xl bg-[#0B0B0E] p-1 border border-white/10">
+            <div className="inline-flex rounded-xl bg-[#0B0B0E] p-1 border border-[#4A0E1E]">
               {[
                 { key: 'today', label: 'Hôm nay' },
                 { key: '7d', label: '7 ngày' },
@@ -99,7 +98,7 @@ export default function AnalyticsPanel({ branches = [] }) {
                   onClick={() => setRange(opt.key)}
                   className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                     range === opt.key
-                      ? 'bg-[#D4AF37] text-[#0B0B0E]'
+                      ? 'bg-[#9E1B32] text-[#F5F0E6]'
                       : 'text-[#F5F0E6]/70 hover:text-[#F5F0E6]'
                   }`}
                 >
@@ -108,7 +107,7 @@ export default function AnalyticsPanel({ branches = [] }) {
               ))}
             </div>
           ) : (
-            <span className="px-3 py-1.5 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-xs font-semibold text-[#D4AF37]">
+            <span className="px-3 py-1.5 rounded-xl bg-[#4A0E1E]/80 border border-[#9E1B32]/60 text-xs font-semibold text-[#F5F0E6]">
               Hôm nay
             </span>
           )}
@@ -119,14 +118,13 @@ export default function AnalyticsPanel({ branches = [] }) {
         <div className="py-16 text-center text-sm text-[#F5F0E6]/60">Đang tải dữ liệu thống kê...</div>
       ) : (
         <>
-          {/* KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <div className="glass-card p-5 space-y-2">
               <div className="flex items-center justify-between text-xs text-[#F5F0E6]/65">
                 <span>{isCashier ? 'Doanh thu hôm nay' : 'Tổng doanh thu'}</span>
-                <DollarSign className="w-4 h-4 text-[#D4AF37]" />
+                <DollarSign className="w-4 h-4 text-[#E86B86]" />
               </div>
-              <div className="text-2xl font-serif font-bold text-[#D4AF37]">
+              <div className="text-2xl font-serif font-bold text-[#E86B86]">
                 {formatVND(isCashier ? overview?.todayRevenue : overview?.totalRevenue)}
               </div>
               <div className="text-[11px] text-[#F5F0E6]/50">
@@ -163,9 +161,9 @@ export default function AnalyticsPanel({ branches = [] }) {
             <div className="glass-card p-5 space-y-2">
               <div className="flex items-center justify-between text-xs text-[#F5F0E6]/65">
                 <span>Cảnh báo tồn kho thấp</span>
-                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <AlertTriangle className="w-4 h-4 text-[#E86B86]" />
               </div>
-              <div className="text-2xl font-serif font-bold text-amber-300">
+              <div className="text-2xl font-serif font-bold text-[#F08CA2]">
                 {overview?.lowStockCount || 0} món
               </div>
               <div className="text-[11px] text-[#F5F0E6]/55">
@@ -174,10 +172,9 @@ export default function AnalyticsPanel({ branches = [] }) {
             </div>
           </div>
 
-          {/* Bieu do Doanh thu */}
           <div className="glass-card p-5 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-[#D4AF37]" />
+              <TrendingUp className="w-5 h-5 text-[#E86B86]" />
               <h3 className="font-serif text-lg font-bold text-[#F5F0E6]">
                 Biểu Đồ Doanh Thu Theo Ngày (VNĐ)
               </h3>
@@ -187,9 +184,9 @@ export default function AnalyticsPanel({ branches = [] }) {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={charts.revenueByDate}>
                     <defs>
-                      <linearGradient id="goldRevGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.55} />
-                        <stop offset="95%" stopColor="#D4AF37" stopOpacity={0.02} />
+                      <linearGradient id="wineRevGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#C83254" stopOpacity={0.65} />
+                        <stop offset="95%" stopColor="#4A0E1E" stopOpacity={0.04} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
@@ -214,9 +211,9 @@ export default function AnalyticsPanel({ branches = [] }) {
                     <Area
                       type="monotone"
                       dataKey="revenue"
-                      stroke="#D4AF37"
+                      stroke="#C83254"
                       strokeWidth={2.5}
-                      fill="url(#goldRevGrad)"
+                      fill="url(#wineRevGrad)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -228,11 +225,10 @@ export default function AnalyticsPanel({ branches = [] }) {
             )}
           </div>
 
-          {/* 2 Bieu do: Ty le lap day sanh & Gio cao diem */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="glass-card p-5 sm:p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-5 h-5 text-[#D4AF37]" />
+                <Building2 className="w-5 h-5 text-[#E86B86]" />
                 <h3 className="font-serif text-lg font-bold text-[#F5F0E6]">
                   Tỷ Lệ Lấp Đầy Từng Sảnh (%)
                 </h3>
@@ -257,7 +253,7 @@ export default function AnalyticsPanel({ branches = [] }) {
                           : [val, 'Lượt đặt']
                       }
                     />
-                    <Bar dataKey="occupancyRate" fill="#D4AF37" radius={[0, 6, 6, 0]} />
+                    <Bar dataKey="occupancyRate" fill="#B8254E" radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -265,7 +261,7 @@ export default function AnalyticsPanel({ branches = [] }) {
 
             <div className="glass-card p-5 sm:p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-5 h-5 text-[#D4AF37]" />
+                <Clock className="w-5 h-5 text-[#E86B86]" />
                 <h3 className="font-serif text-lg font-bold text-[#F5F0E6]">
                   Biểu Đồ Giờ Cao Điểm (Peak Hours)
                 </h3>
@@ -278,7 +274,7 @@ export default function AnalyticsPanel({ branches = [] }) {
                     <YAxis stroke="#9CA3AF" fontSize={11} allowDecimals={false} />
                     <Tooltip contentStyle={tooltipStyle} />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="bookings" name="Số đơn đặt" fill="#D4AF37" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="bookings" name="Số đơn đặt" fill="#B8254E" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="guests" name="Tổng khách" fill="#38BDF8" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

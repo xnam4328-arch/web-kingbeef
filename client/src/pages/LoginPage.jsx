@@ -43,8 +43,8 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md glass-card p-8">
         <div className="text-center mb-7">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8C6D14] flex items-center justify-center mx-auto mb-3 shadow-gold">
-            <Crown className="w-6 h-6 text-[#0B0B0E]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8254E] via-[#9E1B32] to-[#4A0E1E] flex items-center justify-center mx-auto mb-3 shadow-wine">
+            <Crown className="w-6 h-6 text-[#F5F0E6]" />
           </div>
           <h1 className="text-3xl font-serif font-bold text-[#F5F0E6]">Đăng Nhập</h1>
           <p className="text-xs text-[#F5F0E6]/60 mt-1">
@@ -63,7 +63,7 @@ export default function LoginPage() {
           <div>
             <label className="block text-xs font-medium text-[#F5F0E6]/75 mb-1.5">Email</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
@@ -78,7 +78,7 @@ export default function LoginPage() {
           <div>
             <label className="block text-xs font-medium text-[#F5F0E6]/75 mb-1.5">Mật khẩu</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
@@ -90,12 +90,11 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <button type="submit" disabled={submitting} className="btn-gold w-full py-3 mt-2">
+          <button type="submit" disabled={submitting} className="btn-wine w-full py-3 mt-2">
             {submitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
         </form>
 
-        {/* Quick demo accounts */}
         <div className="mt-6 pt-5 border-t border-white/10">
           <div className="text-[11px] text-[#F5F0E6]/50 text-center mb-2.5">
             Điền nhanh tài khoản trải nghiệm (từ seed.js):
@@ -109,7 +108,7 @@ export default function LoginPage() {
                   setEmail(acc.email);
                   setPassword(acc.pass);
                 }}
-                className="px-3 py-1.5 rounded-lg text-xs bg-[#0B0B0E]/80 border border-white/10 hover:border-[#D4AF37]/50 text-[#F5F0E6]/80 transition-colors"
+                className="px-3 py-1.5 rounded-lg text-xs bg-[#0B0B0E]/80 border border-[#4A0E1E] hover:border-[#C83254] text-[#F5F0E6]/85 transition-colors"
               >
                 {acc.label}
               </button>
@@ -119,7 +118,7 @@ export default function LoginPage() {
 
         <p className="text-center text-xs text-[#F5F0E6]/60 mt-6">
           Chưa có tài khoản?{' '}
-          <Link to="/register" className="text-[#D4AF37] hover:underline font-medium">
+          <Link to="/register" className="text-[#E86B86] hover:underline font-medium">
             Đăng ký ngay
           </Link>
         </p>

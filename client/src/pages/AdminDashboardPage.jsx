@@ -8,6 +8,7 @@ import Tables3DPanel from '../components/admin/Tables3DPanel';
 import MenuInventoryPanel from '../components/admin/MenuInventoryPanel';
 import CustomersPanel from '../components/admin/CustomersPanel';
 import StaffPanel from '../components/admin/StaffPanel';
+import ActivityLogsPanel from '../components/admin/ActivityLogsPanel';
 
 export default function AdminDashboardPage() {
   const { user } = useAuth();
@@ -18,7 +19,6 @@ export default function AdminDashboardPage() {
     [user?.role]
   );
 
-  // Tab mac dinh theo vai tro: Admin -> analytics, Cashier & Staff -> reservations
   const defaultTab =
     user?.role === 'admin'
       ? 'analytics'
@@ -62,6 +62,9 @@ export default function AdminDashboardPage() {
           {activeTab === 'customers' && allowedKeys.includes('customers') && <CustomersPanel />}
           {activeTab === 'staff' && allowedKeys.includes('staff') && (
             <StaffPanel branches={branches} />
+          )}
+          {activeTab === 'activity-logs' && allowedKeys.includes('activity-logs') && (
+            <ActivityLogsPanel branches={branches} />
           )}
         </div>
       </div>

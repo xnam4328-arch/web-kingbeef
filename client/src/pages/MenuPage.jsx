@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Clock, Sparkles, Wine, AlertCircle } from 'lucide-react';
 import VatNotice from '../components/common/VatNotice';
+import MenuImage from '../components/common/MenuImage';
 import { api } from '../services/api';
 import { formatVND } from '../utils/format';
 
@@ -44,10 +45,9 @@ export default function MenuPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <div className="text-xs uppercase tracking-[0.25em] text-[#D4AF37] mb-2">
+          <div className="text-xs uppercase tracking-[0.25em] text-[#E86B86] mb-2">
             KingBeef Culinary Collection
           </div>
           <h1 className="text-3xl sm:text-5xl font-serif font-bold">Thực Đơn Nhà Hàng</h1>
@@ -56,23 +56,23 @@ export default function MenuPage() {
       </div>
 
       {/* Banner uu dai Couple Set */}
-      <div className="glass-card p-4 sm:p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-[#D4AF37]/35 bg-gradient-to-r from-[#D4AF37]/10 via-[#16161C]/90 to-[#16161C]/90">
+      <div className="glass-card p-4 sm:p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-[#9E1B32]/70 bg-gradient-to-r from-[#4A0E1E]/80 via-[#16161C]/90 to-[#16161C]/90">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/20 flex items-center justify-center shrink-0">
-            <Wine className="w-5 h-5 text-[#D4AF37]" />
+          <div className="w-10 h-10 rounded-xl bg-[#9E1B32]/35 border border-[#C83254]/50 flex items-center justify-center shrink-0">
+            <Wine className="w-5 h-5 text-[#E86B86]" />
           </div>
           <div>
-            <div className="font-semibold text-sm text-[#E8CC6C]">
+            <div className="font-semibold text-sm text-[#F5F0E6]">
               Đặc Quyền Khi Đặt Trước Couple Set
             </div>
             <p className="text-xs text-[#F5F0E6]/75 mt-0.5">
               Chọn bất kỳ <strong>Couple Set</strong> nào ở bước đặt món trước để nhận ngay ưu đãi{' '}
-              <strong className="text-[#D4AF37]">2 ly rượu vang tùy ý chỉ 199.000đ</strong>. Riêng{' '}
+              <strong className="text-[#E86B86]">2 ly rượu vang tùy ý chỉ 199.000đ</strong>. Riêng{' '}
               <strong>Sweetie Set</strong> được <strong>Miễn phí trang trí tiệc</strong>!
             </p>
           </div>
         </div>
-        <Link to="/booking" className="btn-gold shrink-0 text-xs py-2.5 px-4">
+        <Link to="/booking" className="btn-wine shrink-0 text-xs py-2.5 px-4">
           Đặt bàn &amp; Pre-order
         </Link>
       </div>
@@ -86,8 +86,8 @@ export default function MenuPage() {
               onClick={() => setCategory(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                 category === cat
-                  ? 'bg-[#D4AF37] text-[#0B0B0E] border-[#D4AF37] shadow-gold'
-                  : 'bg-[#16161C] text-[#F5F0E6]/75 border-white/10 hover:border-[#D4AF37]/40'
+                  ? 'bg-[#9E1B32] text-[#F5F0E6] border-[#C83254] shadow-wine'
+                  : 'bg-[#16161C] text-[#F5F0E6]/75 border-[#4A0E1E] hover:border-[#C83254]/70'
               }`}
             >
               {cat === 'all' ? 'Tất cả món' : cat}
@@ -128,27 +128,25 @@ export default function MenuPage() {
                 }`}
               >
                 <div className="relative h-48 bg-[#0B0B0E] overflow-hidden">
-                  {item.imageUrl && (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className={`w-full h-full object-cover transition-transform duration-500 ${
-                        outOfStock ? 'grayscale' : 'hover:scale-105'
-                      }`}
-                    />
-                  )}
+                  <MenuImage
+                    src={item.imageUrl}
+                    alt={item.name}
+                    category={item.category}
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                      outOfStock ? 'grayscale' : 'hover:scale-105'
+                    }`}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#16161C] via-transparent to-transparent" />
 
-                  {/* Badges */}
                   <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2">
                     {isSweetie ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-[#D4AF37] to-[#F2D578] text-[#0B0B0E] shadow-lg">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-[#8B1E3F] to-[#C83254] text-[#F5F0E6] border border-[#F5F0E6]/30 shadow-lg">
                         <Sparkles className="w-3 h-3" />
                         Miễn phí trang trí tiệc
                       </span>
                     ) : item.requiresAdvanceOrderHours > 0 ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/90 text-[#0B0B0E]">
-                        <Clock className="w-3 h-3" />
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#4A0E1E]/95 text-[#F5F0E6] border border-[#C83254]">
+                        <Clock className="w-3 h-3 text-[#E86B86]" />
                         Đặt trước tối thiểu {item.requiresAdvanceOrderHours}h
                       </span>
                     ) : (
@@ -166,7 +164,7 @@ export default function MenuPage() {
 
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
-                    <div className="text-[11px] uppercase tracking-wider text-[#D4AF37]/80 mb-1">
+                    <div className="text-[11px] uppercase tracking-wider text-[#E86B86] mb-1">
                       {item.category}
                     </div>
                     <h3 className="font-serif text-lg font-semibold text-[#F5F0E6] mb-1.5">
@@ -179,7 +177,7 @@ export default function MenuPage() {
 
                   <div className="flex items-end justify-between pt-3 border-t border-white/10">
                     <div>
-                      <div className="text-lg font-bold text-[#D4AF37]">{formatVND(item.price)}</div>
+                      <div className="text-lg font-bold text-[#E86B86]">{formatVND(item.price)}</div>
                       <div className="text-[10px] text-[#F5F0E6]/45">
                         Giá trên chưa bao gồm thuế VAT
                       </div>

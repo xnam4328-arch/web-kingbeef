@@ -11,6 +11,7 @@ import {
   User,
   Copy,
   X,
+  Phone,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -18,6 +19,8 @@ import StatusBadge from '../components/common/StatusBadge';
 import VatNotice from '../components/common/VatNotice';
 import {
   DEPOSIT_STATUS_META,
+  HOTLINE_DISPLAY,
+  HOTLINE_TEL,
   ROLE_LABELS,
   formatDateVN,
   formatVND,
@@ -45,12 +48,14 @@ export default function ProfilePage() {
     loadReservations();
   }, []);
 
-  const handleConfirmTransfer = async (id) => {
-    setBusyId(id);
+  const handleConfirmTransfer = async (booking) => {
+    setBusyId(booking.id);
     setActionErr('');
     setActionMsg('');
     try {
-      const res = await api.patch(`/reservations/${id}/confirm-transfer`);
+      const res = await api.patch(`/reservations/${booking.id}/confirm-transfer`, {
+        bookingCode: booking.bookingCode,
+      });
       setActionMsg(res.message);
       setQrModal(null);
       loadReservations();
@@ -79,30 +84,28 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
-      {/* Thong tin tai khoan */}
       <div className="glass-card p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 flex items-center justify-center">
-            <User className="w-7 h-7 text-[#D4AF37]" />
+          <div className="w-14 h-14 rounded-2xl bg-[#4A0E1E]/80 border border-[#9E1B32]/60 flex items-center justify-center">
+            <User className="w-7 h-7 text-[#E86B86]" />
           </div>
           <div>
             <h1 className="text-2xl font-serif font-bold text-[#F5F0E6]">{user?.fullName}</h1>
             <div className="text-sm text-[#F5F0E6]/65">
               {user?.email} • {user?.phone}
             </div>
-            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#D4AF37]/15 text-[#D4AF37] border border-[#D4AF37]/30">
+            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#4A0E1E]/70 text-[#E86B86] border border-[#9E1B32]/60">
               {ROLE_LABELS[user?.role]}
             </span>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link to="/booking" className="btn-gold">
+          <Link to="/booking" className="btn-wine">
             Đặt bàn 3D mới
           </Link>
         </div>
       </div>
 
-      {/* Thong bao */}
       {actionMsg && (
         <div className="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-sm flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -116,7 +119,6 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* Lich su dat ban */}
       <div>
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <h2 className="text-2xl font-serif font-bold">Lịch Sử Đặt Bàn Của Bạn</h2>
@@ -128,7 +130,7 @@ export default function ProfilePage() {
         ) : reservations.length === 0 ? (
           <div className="glass-card p-12 text-center space-y-4">
             <p className="text-[#F5F0E6]/65">Bạn chưa có đơn đặt bàn nào tại KingBeef.</p>
-            <Link to="/booking" className="btn-gold">
+            <Link to="/booking" className="btn-wine">
               Trải nghiệm đặt bàn 3D ngay
             </Link>
           </div>
@@ -145,23 +147,23 @@ export default function ProfilePage() {
                   <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
                     <div>
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-mono text-base font-bold text-[#D4AF37]">
+                        <span className="font-mono text-base font-bold text-[#E86B86]">
                           {b.bookingCode}
                         </span>
                         <StatusBadge status={b.status} />
                       </div>
                       <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[#F5F0E6]/75">
                         <span className="inline-flex items-center gap-1.5">
-                          <MapPin className="w-3.5 h-3.5 text-[#D4AF37]" />
+                          <MapPin className="w-3.5 h-3.5 text-[#C83254]" />
                           Chi nhánh {b.branch?.name} — {b.hall?.name} —{' '}
                           <strong className="text-[#F5F0E6]">Bàn {b.table?.tableNumber}</strong>
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                          <Calendar className="w-3.5 h-3.5 text-[#C83254]" />
                           {formatDateVN(b.reservationDate)}
                         </span>
                         <span className="inline-flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
+                          <Clock className="w-3.5 h-3.5 text-[#C83254]" />
                           {b.startTime} – {b.endTime} ({b.guestCount} khách)
                         </span>
                       </div>
@@ -169,7 +171,7 @@ export default function ProfilePage() {
 
                     <div className="text-right">
                       <div className="text-xs text-[#F5F0E6]/55">Tiền cọc giữ bàn</div>
-                      <div className="text-lg font-bold text-[#D4AF37]">
+                      <div className="text-lg font-bold text-[#E86B86]">
                         {formatVND(b.depositAmount)}
                       </div>
                       <div className={`text-xs font-medium ${depMeta.className}`}>
@@ -178,10 +180,9 @@ export default function ProfilePage() {
                     </div>
                   </div>
 
-                  {/* Pre-order items */}
                   {(b.items?.length > 0 || b.hasWinePromo) && (
                     <div className="bg-[#0B0B0E]/60 rounded-xl p-4 space-y-1.5 text-xs">
-                      <div className="font-semibold text-[#D4AF37] mb-1">
+                      <div className="font-semibold text-[#E86B86] mb-1">
                         Món đặt trước (Tổng: {formatVND(b.totalAmount)} — chưa gồm VAT):
                       </div>
                       {b.items.map((it) => (
@@ -193,7 +194,7 @@ export default function ProfilePage() {
                         </div>
                       ))}
                       {b.hasWinePromo && (
-                        <div className="flex justify-between text-[#E8CC6C] pt-1 border-t border-white/5">
+                        <div className="flex justify-between text-[#E86B86] pt-1 border-t border-white/5">
                           <span className="inline-flex items-center gap-1.5">
                             <Wine className="w-3.5 h-3.5" />
                             Ưu đãi 2 ly rượu vang tùy ý (Couple Set)
@@ -210,17 +211,22 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                    <div className="text-[11px] text-[#F5F0E6]/50">
-                      Quy định: Khách hàng có thể tự hủy đơn trước giờ ăn tối thiểu 2 tiếng.
+                    <div className="text-[11px] text-[#F5F0E6]/55 inline-flex items-center gap-1.5">
+                      <Phone className="w-3 h-3 text-[#C83254]" />
+                      <span>
+                        Hủy tự động trước 2 tiếng • Hỗ trợ:{' '}
+                        <a href={HOTLINE_TEL} className="text-[#E86B86] hover:underline">
+                          {HOTLINE_DISPLAY}
+                        </a>
+                      </span>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2.5">
                       {b.status === 'pending' && (
                         <button
                           onClick={() => setQrModal(b)}
-                          className="btn-gold text-xs py-2 px-4"
+                          className="btn-wine text-xs py-2 px-4"
                         >
                           <QrCode className="w-4 h-4" />
                           Thanh toán cọc QR
@@ -250,7 +256,6 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* Modal QR dat coc */}
       {qrModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="glass-card max-w-md w-full p-6 relative space-y-4">
@@ -260,7 +265,7 @@ export default function ProfilePage() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xl font-serif font-bold text-[#D4AF37]">
+            <h3 className="text-xl font-serif font-bold text-[#E86B86]">
               Quét Mã VietQR Đặt Cọc
             </h3>
             <div className="bg-white p-3 rounded-xl flex justify-center">
@@ -270,16 +275,16 @@ export default function ProfilePage() {
                 className="w-60 h-60 object-contain"
               />
             </div>
-            <div className="text-xs space-y-1.5 bg-[#0B0B0E]/80 p-3.5 rounded-xl border border-white/10">
+            <div className="text-xs space-y-1.5 bg-[#0B0B0E]/80 p-3.5 rounded-xl border border-[#4A0E1E]">
               <div className="flex justify-between">
                 <span className="text-[#F5F0E6]/60">Số tiền cọc:</span>
-                <span className="font-bold text-[#D4AF37]">{formatVND(qrModal.depositAmount)}</span>
+                <span className="font-bold text-[#E86B86]">{formatVND(qrModal.depositAmount)}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-[#F5F0E6]/60">Nội dung CK:</span>
                 <button
                   onClick={() => navigator.clipboard?.writeText(qrModal.qrPayment?.transferContent)}
-                  className="inline-flex items-center gap-1 font-mono text-[#E8CC6C] hover:underline"
+                  className="inline-flex items-center gap-1 font-mono text-[#E86B86] hover:underline"
                 >
                   {qrModal.qrPayment?.transferContent}
                   <Copy className="w-3 h-3" />
@@ -288,8 +293,8 @@ export default function ProfilePage() {
             </div>
             <button
               disabled={busyId === qrModal.id}
-              onClick={() => handleConfirmTransfer(qrModal.id)}
-              className="btn-gold w-full py-3"
+              onClick={() => handleConfirmTransfer(qrModal)}
+              className="btn-wine w-full py-3"
             >
               {busyId === qrModal.id ? 'Đang gửi xác nhận...' : 'Tôi đã chuyển khoản'}
             </button>

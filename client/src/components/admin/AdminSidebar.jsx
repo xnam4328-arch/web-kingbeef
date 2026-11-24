@@ -5,6 +5,7 @@ import {
   UtensilsCrossed,
   Users,
   ShieldCheck,
+  History,
 } from 'lucide-react';
 import { ROLE_LABELS } from '../../utils/format';
 
@@ -45,6 +46,12 @@ export const ADMIN_TABS = [
     icon: ShieldCheck,
     roles: ['admin'],
   },
+  {
+    key: 'activity-logs',
+    label: 'Lịch sử thao tác',
+    icon: History,
+    roles: ['admin'],
+  },
 ];
 
 export default function AdminSidebar({ user, activeTab, onSelectTab }) {
@@ -53,11 +60,11 @@ export default function AdminSidebar({ user, activeTab, onSelectTab }) {
   return (
     <aside className="glass-card p-4 space-y-4 h-fit lg:sticky lg:top-24">
       <div className="px-2 pb-3 border-b border-white/10">
-        <div className="text-[11px] uppercase tracking-widest text-[#D4AF37]">KingBeef Portal</div>
+        <div className="text-[11px] uppercase tracking-widest text-[#E86B86]">KingBeef Portal</div>
         <div className="font-serif text-lg font-bold text-[#F5F0E6] mt-0.5 truncate">
           {user?.fullName}
         </div>
-        <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#D4AF37]/15 text-[#E8CC6C] border border-[#D4AF37]/35">
+        <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#4A0E1E]/80 text-[#F5F0E6] border border-[#9E1B32]/65">
           {ROLE_LABELS[user?.role]}
         </span>
       </div>
@@ -73,8 +80,8 @@ export default function AdminSidebar({ user, activeTab, onSelectTab }) {
               onClick={() => onSelectTab(tab.key)}
               className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all text-left ${
                 active
-                  ? 'bg-gradient-to-r from-[#D4AF37] to-[#B89225] text-[#0B0B0E] shadow-gold'
-                  : 'text-[#F5F0E6]/75 hover:bg-white/5 hover:text-[#F5F0E6]'
+                  ? 'bg-gradient-to-r from-[#8B1E3F] via-[#9E1B32] to-[#B8254E] text-[#F5F0E6] shadow-wine'
+                  : 'text-[#F5F0E6]/75 hover:bg-[#4A0E1E]/40 hover:text-[#F5F0E6]'
               }`}
             >
               <Icon className="w-4 h-4 shrink-0" />

@@ -11,6 +11,7 @@ import {
   ShoppingBag,
 } from 'lucide-react';
 import VatNotice from '../common/VatNotice';
+import MenuImage from '../common/MenuImage';
 import { api } from '../../services/api';
 import { formatVND, getHoursUntil } from '../../utils/format';
 
@@ -31,6 +32,8 @@ const BASE_DEPOSIT = 200000;
 export default function Step3PreOrderMenu({
   reservationDate,
   startTime,
+  guestName,
+  guestPhone,
   cart,
   setCart,
   hasWinePromo,
@@ -60,7 +63,6 @@ export default function Step3PreOrderMenu({
     [reservationDate, startTime]
   );
 
-  // Kiem tra co chon bat ky Couple Set nao khong
   const hasCoupleSet = useMemo(() => {
     return Object.entries(cart).some(([id, qty]) => {
       if (qty <= 0) return false;
@@ -69,7 +71,6 @@ export default function Step3PreOrderMenu({
     });
   }, [cart, menuItems]);
 
-  // Tu dong tat uu dai vang neu bo het Couple Set
   useEffect(() => {
     if (!hasCoupleSet && hasWinePromo) {
       setHasWinePromo(false);
@@ -119,7 +120,7 @@ export default function Step3PreOrderMenu({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-xl font-serif font-bold text-[#D4AF37]">
+          <h3 className="text-xl font-serif font-bold text-[#E86B86]">
             Đặt Món Trước (Pre-order — Tùy Chọn)
           </h3>
           <p className="text-xs text-[#F5F0E6]/65 mt-0.5">
@@ -132,13 +133,13 @@ export default function Step3PreOrderMenu({
 
       {/* Goi y tu dong Uu dai 2 ly ruou vang 199.000d khi chon Couple Set */}
       {hasCoupleSet && (
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-[#D4AF37]/20 via-[#D4AF37]/10 to-[#16161C] border-2 border-[#D4AF37] shadow-gold flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-[#8B1E3F]/50 via-[#4A0E1E]/70 to-[#16161C] border-2 border-[#C83254] shadow-wine flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="w-11 h-11 rounded-xl bg-[#D4AF37] text-[#0B0B0E] flex items-center justify-center shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-[#9E1B32] text-[#F5F0E6] flex items-center justify-center shrink-0">
               <Wine className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-[#E8CC6C]">
+              <div className="text-xs font-bold uppercase tracking-wider text-[#E86B86]">
                 Ưu đãi độc quyền khi chọn Couple Set
               </div>
               <div className="font-serif text-lg font-bold text-[#F5F0E6]">
@@ -151,14 +152,14 @@ export default function Step3PreOrderMenu({
             </div>
           </div>
 
-          <label className="inline-flex items-center gap-2.5 cursor-pointer select-none px-4 py-2.5 rounded-xl bg-[#0B0B0E]/80 border border-[#D4AF37]/50 shrink-0">
+          <label className="inline-flex items-center gap-2.5 cursor-pointer select-none px-4 py-2.5 rounded-xl bg-[#0B0B0E]/80 border border-[#C83254]/70 shrink-0">
             <input
               type="checkbox"
               checked={hasWinePromo}
               onChange={(e) => setHasWinePromo(e.target.checked)}
-              className="w-4 h-4 accent-[#D4AF37]"
+              className="w-4 h-4 accent-[#9E1B32]"
             />
-            <span className="text-sm font-semibold text-[#D4AF37]">
+            <span className="text-sm font-semibold text-[#F5F0E6]">
               {hasWinePromo ? 'Đã thêm (+199.000đ)' : 'Chọn ưu đãi này'}
             </span>
           </label>
@@ -166,19 +167,17 @@ export default function Step3PreOrderMenu({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Danh sach mon ben trai */}
+        {/* Danh sach mon */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-[#F5F0E6]/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm món ăn muốn đặt trước..."
-                className="input-luxury pl-10 text-xs"
-              />
-            </div>
+          <div className="relative">
+            <Search className="w-4 h-4 text-[#F5F0E6]/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm món ăn muốn đặt trước..."
+              className="input-luxury pl-10 text-xs"
+            />
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -189,8 +188,8 @@ export default function Step3PreOrderMenu({
                 onClick={() => setCategory(cat)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap border transition-colors ${
                   category === cat
-                    ? 'bg-[#D4AF37] text-[#0B0B0E] border-[#D4AF37]'
-                    : 'bg-[#0B0B0E]/70 text-[#F5F0E6]/75 border-white/10 hover:border-[#D4AF37]/40'
+                    ? 'bg-[#9E1B32] text-[#F5F0E6] border-[#C83254]'
+                    : 'bg-[#0B0B0E]/70 text-[#F5F0E6]/75 border-[#4A0E1E] hover:border-[#C83254]/60'
                 }`}
               >
                 {cat === 'all' ? 'Tất cả' : cat}
@@ -214,30 +213,29 @@ export default function Step3PreOrderMenu({
                   <div
                     key={item.id}
                     className={`p-3.5 rounded-xl bg-[#0B0B0E]/75 border flex items-center justify-between gap-4 transition-colors ${
-                      qty > 0 ? 'border-[#D4AF37]/60' : 'border-white/10'
+                      qty > 0 ? 'border-[#C83254]' : 'border-[#4A0E1E]/60'
                     } ${outOfStock || blockedBy4hRule ? 'opacity-65' : ''}`}
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
-                      {item.imageUrl && (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name}
-                          className="w-16 h-16 rounded-lg object-cover shrink-0 bg-[#16161C]"
-                        />
-                      )}
+                      <MenuImage
+                        src={item.imageUrl}
+                        alt={item.name}
+                        category={item.category}
+                        className="w-16 h-16 rounded-lg object-cover shrink-0 bg-[#16161C]"
+                      />
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
                           <span className="font-semibold text-sm text-[#F5F0E6] truncate">
                             {item.name}
                           </span>
                           {isSweetie && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#D4AF37] text-[#0B0B0E]">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#9E1B32] text-[#F5F0E6]">
                               <Sparkles className="w-2.5 h-2.5" />
                               Miễn phí trang trí tiệc
                             </span>
                           )}
                         </div>
-                        <div className="text-xs font-bold text-[#D4AF37] mt-0.5">
+                        <div className="text-xs font-bold text-[#E86B86] mt-0.5">
                           {formatVND(item.price)}
                           <span className="text-[10px] font-normal text-[#F5F0E6]/45 ml-1.5">
                             (chưa VAT • còn {item.stockQuantity})
@@ -246,7 +244,7 @@ export default function Step3PreOrderMenu({
                         {item.requiresAdvanceOrderHours > 0 && (
                           <div
                             className={`text-[11px] mt-1 inline-flex items-center gap-1 ${
-                              blockedBy4hRule ? 'text-red-400 font-medium' : 'text-amber-300'
+                              blockedBy4hRule ? 'text-red-400 font-medium' : 'text-[#F08CA2]'
                             }`}
                           >
                             <Clock className="w-3 h-3" />
@@ -264,19 +262,19 @@ export default function Step3PreOrderMenu({
                           Hết món
                         </span>
                       ) : blockedBy4hRule ? (
-                        <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 text-[11px]">
+                        <span className="px-2.5 py-1 rounded-lg bg-[#4A0E1E]/80 text-[#F08CA2] text-[11px]">
                           Chưa đủ 4h
                         </span>
                       ) : qty === 0 ? (
                         <button
                           type="button"
                           onClick={() => updateQty(item, 1)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#D4AF37]/50 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0B0B0E] transition-colors"
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#9E1B32] text-[#F5F0E6] hover:bg-[#9E1B32] transition-colors"
                         >
                           + Thêm
                         </button>
                       ) : (
-                        <div className="inline-flex items-center gap-2 bg-[#16161C] border border-[#D4AF37]/40 rounded-lg p-1">
+                        <div className="inline-flex items-center gap-2 bg-[#16161C] border border-[#C83254]/70 rounded-lg p-1">
                           <button
                             type="button"
                             onClick={() => updateQty(item, -1)}
@@ -303,18 +301,25 @@ export default function Step3PreOrderMenu({
           )}
         </div>
 
-        {/* Tom tat don hang & Ghi chu ben phai */}
+        {/* Tom tat don hang */}
         <div className="space-y-4">
-          <div className="p-5 rounded-2xl bg-[#0B0B0E]/85 border border-[#D4AF37]/30 space-y-4">
-            <div className="flex items-center gap-2 font-serif text-lg font-bold text-[#D4AF37]">
+          <div className="p-5 rounded-2xl bg-[#0B0B0E]/85 border border-[#9E1B32]/65 space-y-4">
+            <div className="flex items-center gap-2 font-serif text-lg font-bold text-[#E86B86]">
               <ShoppingBag className="w-5 h-5" />
-              Tóm Tắt Pre-order
+              Tóm Tắt Đơn Đặt Bàn
+            </div>
+
+            <div className="text-xs bg-[#16161C] p-3 rounded-xl border border-[#4A0E1E] space-y-0.5">
+              <div className="text-[#F5F0E6]/60">Người đặt:</div>
+              <div className="font-semibold text-[#F5F0E6]">
+                {guestName} • {guestPhone}
+              </div>
             </div>
 
             {cartSummary.selectedList.length === 0 ? (
-              <p className="text-xs text-[#F5F0E6]/55 py-2">
+              <p className="text-xs text-[#F5F0E6]/55 py-1">
                 Chưa chọn món đặt trước. Tiền cọc giữ bàn tiêu chuẩn là{' '}
-                <strong className="text-[#D4AF37]">200.000đ/bàn</strong>.
+                <strong className="text-[#E86B86]">200.000đ/bàn</strong>.
               </p>
             ) : (
               <div className="space-y-2 max-h-52 overflow-y-auto text-xs">
@@ -329,7 +334,7 @@ export default function Step3PreOrderMenu({
                   </div>
                 ))}
                 {hasCoupleSet && hasWinePromo && (
-                  <div className="flex justify-between gap-2 text-[#E8CC6C] pt-1 border-t border-white/10">
+                  <div className="flex justify-between gap-2 text-[#E86B86] pt-1 border-t border-white/10">
                     <span>Ưu đãi 2 ly rượu vang tùy ý</span>
                     <span className="font-semibold">199.000đ</span>
                   </div>
@@ -342,7 +347,7 @@ export default function Step3PreOrderMenu({
                 <span>Tổng tiền món đặt trước:</span>
                 <span>{formatVND(cartSummary.totalAmount)}</span>
               </div>
-              <div className="flex justify-between text-base font-bold text-[#D4AF37]">
+              <div className="flex justify-between text-base font-bold text-[#E86B86]">
                 <span>Tiền cọc giữ bàn (QR):</span>
                 <span>{formatVND(cartSummary.depositAmount)}</span>
               </div>
@@ -375,7 +380,7 @@ export default function Step3PreOrderMenu({
               type="button"
               disabled={submitting}
               onClick={onSubmitBooking}
-              className="btn-gold w-full py-3"
+              className="btn-wine w-full py-3"
             >
               {submitting ? 'Đang khởi tạo mã đặt bàn & QR...' : 'Xác nhận & Tạo mã VietQR cọc →'}
             </button>
@@ -383,9 +388,8 @@ export default function Step3PreOrderMenu({
         </div>
       </div>
 
-      {/* Back */}
       <div className="pt-4 border-t border-white/10">
-        <button type="button" onClick={onBack} className="btn-outline-gold">
+        <button type="button" onClick={onBack} className="btn-outline-wine">
           <ArrowLeft className="w-4 h-4" />
           Quay lại chọn bàn 3D
         </button>

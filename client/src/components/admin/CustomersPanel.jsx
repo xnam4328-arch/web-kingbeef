@@ -32,7 +32,7 @@ export default function CustomersPanel() {
     <div className="space-y-5">
       <div className="glass-card p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif font-bold text-[#D4AF37]">Quản Lý Khách Hàng</h2>
+          <h2 className="text-xl font-serif font-bold text-[#E86B86]">Quản Lý Khách Hàng</h2>
           <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
             Danh sách khách hàng thành viên, lịch sử đặt bàn và tổng chi tiêu tích lũy.
           </p>
@@ -68,8 +68,8 @@ export default function CustomersPanel() {
                   className="w-full p-5 flex flex-wrap items-center justify-between gap-4 text-left hover:bg-white/[0.02]"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/15 border border-[#D4AF37]/30 flex items-center justify-center shrink-0">
-                      <Users className="w-5 h-5 text-[#D4AF37]" />
+                    <div className="w-10 h-10 rounded-xl bg-[#4A0E1E]/80 border border-[#9E1B32]/60 flex items-center justify-center shrink-0">
+                      <Users className="w-5 h-5 text-[#E86B86]" />
                     </div>
                     <div>
                       <div className="font-semibold text-sm text-[#F5F0E6]">{c.fullName}</div>
@@ -86,12 +86,12 @@ export default function CustomersPanel() {
                     </div>
                     <div className="text-right">
                       <div className="text-[11px] text-[#F5F0E6]/55">Tổng chi tiêu</div>
-                      <div className="text-sm font-bold text-[#D4AF37]">
+                      <div className="text-sm font-bold text-[#E86B86]">
                         {formatVND(c.totalSpent)}
                       </div>
                     </div>
                     {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-[#D4AF37]" />
+                      <ChevronUp className="w-4 h-4 text-[#E86B86]" />
                     ) : (
                       <ChevronDown className="w-4 h-4 text-[#F5F0E6]/50" />
                     )}
@@ -100,7 +100,7 @@ export default function CustomersPanel() {
 
                 {isOpen && (
                   <div className="px-5 pb-5 pt-2 border-t border-white/10 bg-[#0B0B0E]/50 space-y-2">
-                    <div className="text-xs font-semibold text-[#D4AF37] mb-2">
+                    <div className="text-xs font-semibold text-[#E86B86] mb-2">
                       Lịch sử đặt bàn ({c.reservations?.length || 0}):
                     </div>
                     {c.reservations?.length === 0 ? (
@@ -112,7 +112,7 @@ export default function CustomersPanel() {
                           className="p-3 rounded-xl bg-[#16161C] border border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs"
                         >
                           <div>
-                            <span className="font-mono font-bold text-[#D4AF37] mr-2">
+                            <span className="font-mono font-bold text-[#E86B86] mr-2">
                               {r.bookingCode}
                             </span>
                             <span className="text-[#F5F0E6]/80">

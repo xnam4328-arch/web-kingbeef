@@ -20,35 +20,35 @@
 
 @layer components {
   .glass-card {
-    @apply bg-[#16161C]/80 backdrop-blur-xl border border-[#D4AF37]/20 rounded-2xl shadow-xl;
+    @apply bg-[#16161C]/85 backdrop-blur-xl border border-[#4A0E1E]/90 rounded-2xl shadow-xl;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:border-[#D4AF37]/50 hover:shadow-gold;
+    @apply glass-card transition-all duration-300 hover:border-[#C83254]/70 hover:shadow-wine;
   }
 
-  .btn-gold {
+  .btn-wine {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm
-           bg-gradient-to-r from-[#D4AF37] via-[#E5C558] to-[#B89225] text-[#0B0B0E]
-           shadow-gold transition-all duration-200 hover:brightness-110 active:scale-[0.98]
+           bg-gradient-to-r from-[#8B1E3F] via-[#9E1B32] to-[#B8254E] text-[#F5F0E6]
+           shadow-wine transition-all duration-200 hover:from-[#9E1B32] hover:to-[#C83254] active:scale-[0.98]
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
-  .btn-outline-gold {
+  .btn-outline-wine {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-medium text-sm
-           border border-[#D4AF37]/50 text-[#D4AF37] bg-[#16161C]/60
-           transition-all duration-200 hover:bg-[#D4AF37]/15 hover:border-[#D4AF37]
+           border border-[#9E1B32]/70 text-[#F5F0E6] bg-[#4A0E1E]/25
+           transition-all duration-200 hover:bg-[#9E1B32]/30 hover:border-[#C83254]
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input-luxury {
-    @apply w-full px-4 py-2.5 rounded-xl bg-[#0B0B0E]/80 border border-white/10 text-[#F5F0E6]
-           placeholder:text-[#F5F0E6]/35 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/50
+    @apply w-full px-4 py-2.5 rounded-xl bg-[#0B0B0E]/85 border border-[#4A0E1E]/80 text-[#F5F0E6]
+           placeholder:text-[#F5F0E6]/35 focus:outline-none focus:border-[#C83254] focus:ring-1 focus:ring-[#C83254]/50
            transition-colors;
   }
 }
 
-/* Custom Luxury Scrollbar */
+/* Custom Wine Red Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -57,9 +57,9 @@
   background: #0b0b0e;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2b2b36;
+  background: #4a0e1e;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d4af37;
+  background: #b8254e;
 }

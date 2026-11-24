@@ -119,7 +119,7 @@ export default function MenuInventoryPanel() {
       isAvailable: true,
       requiresAdvanceOrderHours: 0,
       badge: '',
-      imageUrl: '',
+      imageUrl: '/images/menu/',
     });
     setModalOpen(true);
   };
@@ -176,11 +176,10 @@ export default function MenuInventoryPanel() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="glass-card p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-serif font-bold text-[#D4AF37]">
+            <h2 className="text-xl font-serif font-bold text-[#E86B86]">
               Quản Lý Thực Đơn &amp; Tồn Kho
             </h2>
             <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
@@ -192,7 +191,7 @@ export default function MenuInventoryPanel() {
           <div className="flex flex-wrap items-center gap-3">
             <VatNotice />
             {isAdmin && (
-              <button onClick={openCreate} className="btn-gold text-xs py-2 px-4">
+              <button onClick={openCreate} className="btn-wine text-xs py-2 px-4">
                 <Plus className="w-4 h-4" />
                 Thêm món mới
               </button>
@@ -200,11 +199,10 @@ export default function MenuInventoryPanel() {
           </div>
         </div>
 
-        {/* Canh bao ton kho */}
         {lowStockItems.length > 0 && (
-          <div className="p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/40 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-200">
+          <div className="p-3.5 rounded-xl bg-[#4A0E1E]/70 border border-[#C83254]/60 flex flex-wrap items-center justify-between gap-3 text-xs text-[#F5F0E6]">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-[#E86B86] shrink-0" />
               <span>
                 Có <strong>{lowStockItems.length} món</strong> đang sắp hết hàng (≤ 10) hoặc đang ở
                 trạng thái <strong>Hết món</strong>.
@@ -212,14 +210,13 @@ export default function MenuInventoryPanel() {
             </div>
             <button
               onClick={() => setOnlyAlerts((v) => !v)}
-              className="px-3 py-1 rounded-lg bg-amber-400/20 border border-amber-400/40 font-semibold hover:bg-amber-400/30"
+              className="px-3 py-1 rounded-lg bg-[#9E1B32]/50 border border-[#C83254] font-semibold hover:bg-[#9E1B32]"
             >
               {onlyAlerts ? 'Hiển thị tất cả món' : 'Chỉ xem món cảnh báo'}
             </button>
           </div>
         )}
 
-        {/* Filter bar */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-[#F5F0E6]/40 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -260,11 +257,10 @@ export default function MenuInventoryPanel() {
         </div>
       )}
 
-      {/* Table */}
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#0B0B0E]/80 border-b border-white/10 text-[#D4AF37] uppercase text-[11px]">
+            <thead className="bg-[#0B0B0E]/80 border-b border-[#4A0E1E] text-[#E86B86] uppercase text-[11px]">
               <tr>
                 <th className="py-3.5 px-4">Món ăn</th>
                 <th className="py-3.5 px-4">Danh mục</th>
@@ -292,20 +288,20 @@ export default function MenuInventoryPanel() {
                         <div className="font-semibold text-[#F5F0E6]">{item.name}</div>
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {item.requiresAdvanceOrderHours > 0 && (
-                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">
+                            <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#4A0E1E]/80 text-[#F08CA2]">
                               <Clock className="w-2.5 h-2.5" />
                               Đặt trước {item.requiresAdvanceOrderHours}h
                             </span>
                           )}
                           {item.badge && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D4AF37]/15 text-[#E8CC6C]">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#9E1B32]/30 text-[#F5F0E6]">
                               {item.badge}
                             </span>
                           )}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-[#F5F0E6]/75">{item.category}</td>
-                      <td className="py-3 px-4 font-bold text-[#D4AF37]">{formatVND(item.price)}</td>
+                      <td className="py-3 px-4 font-bold text-[#E86B86]">{formatVND(item.price)}</td>
                       <td className="py-3 px-4">
                         {isAdmin ? (
                           <div className="inline-flex items-center gap-1.5">
@@ -318,16 +314,16 @@ export default function MenuInventoryPanel() {
                                   handleQuickStock(item, e.target.value);
                                 }
                               }}
-                              className="w-16 px-2 py-1 rounded-lg bg-[#0B0B0E] border border-white/15 text-center text-xs"
+                              className="w-16 px-2 py-1 rounded-lg bg-[#0B0B0E] border border-[#4A0E1E] text-center text-xs"
                             />
                             {isLow && (
-                              <span className="text-[10px] text-amber-400 font-semibold">
+                              <span className="text-[10px] text-[#F08CA2] font-semibold">
                                 Sắp hết
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className={isLow ? 'text-amber-400 font-bold' : ''}>
+                          <span className={isLow ? 'text-[#F08CA2] font-bold' : ''}>
                             {item.stockQuantity}
                           </span>
                         )}
@@ -350,7 +346,7 @@ export default function MenuInventoryPanel() {
                             title={item.isAvailable ? 'Báo hết món' : 'Mở bán lại'}
                             className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors ${
                               item.isAvailable
-                                ? 'border-amber-500/40 text-amber-300 hover:bg-amber-500/15'
+                                ? 'border-[#C83254]/60 text-[#F08CA2] hover:bg-[#9E1B32]/25'
                                 : 'border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/15'
                             }`}
                           >
@@ -362,7 +358,7 @@ export default function MenuInventoryPanel() {
                             <>
                               <button
                                 onClick={() => openEdit(item)}
-                                className="p-1.5 rounded-lg border border-white/10 text-[#F5F0E6]/75 hover:border-[#D4AF37] hover:text-[#D4AF37]"
+                                className="p-1.5 rounded-lg border border-[#4A0E1E] text-[#F5F0E6]/75 hover:border-[#C83254] hover:text-[#E86B86]"
                                 title="Sửa món"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -387,7 +383,6 @@ export default function MenuInventoryPanel() {
         </div>
       </div>
 
-      {/* Modal Them / Sua mon (Admin) */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="glass-card max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
@@ -397,7 +392,7 @@ export default function MenuInventoryPanel() {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="font-serif text-xl font-bold text-[#D4AF37] mb-4">
+            <h3 className="font-serif text-xl font-bold text-[#E86B86] mb-4">
               {editingItem ? 'Cập Nhật Món Ăn' : 'Thêm Món Mới'}
             </h3>
             <form onSubmit={handleSubmitForm} className="space-y-3.5 text-xs">
@@ -471,11 +466,11 @@ export default function MenuInventoryPanel() {
                 />
               </div>
               <div>
-                <label className="block mb-1 text-[#F5F0E6]/75">URL hình ảnh</label>
+                <label className="block mb-1 text-[#F5F0E6]/75">Đường dẫn ảnh (/images/menu/...)</label>
                 <input
                   value={form.imageUrl}
                   onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  placeholder="https://..."
+                  placeholder="/images/menu/ten-mon.jpg"
                   className="input-luxury"
                 />
               </div>
@@ -493,11 +488,11 @@ export default function MenuInventoryPanel() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn-outline-gold text-xs py-2"
+                  className="btn-outline-wine text-xs py-2"
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn-gold text-xs py-2 px-5">
+                <button type="submit" className="btn-wine text-xs py-2 px-5">
                   {editingItem ? 'Lưu cập nhật' : 'Thêm món'}
                 </button>
               </div>

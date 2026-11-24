@@ -10,7 +10,6 @@ function LuxuryCenterpiece() {
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-    // Phan hoi xoay muot theo chuyen dong chuot
     const targetRotY = state.pointer.x * 0.55 + state.clock.elapsedTime * 0.12;
     const targetRotX = -state.pointer.y * 0.25;
     groupRef.current.rotation.y = THREE.MathUtils.lerp(
@@ -34,91 +33,94 @@ function LuxuryCenterpiece() {
 
   return (
     <group ref={groupRef} position={[0, -0.1, 0]}>
-      {/* Vong den chum vang dong kien truc */}
+      {/* Vong kien truc Do ruou vang (Wine Red) */}
       <mesh ref={outerRingRef} rotation={[Math.PI / 2.6, 0.2, 0]}>
-        <torusGeometry args={[2.35, 0.045, 24, 100]} />
+        <torusGeometry args={[2.35, 0.048, 24, 100]} />
         <meshStandardMaterial
-          color="#D4AF37"
-          metalness={0.92}
-          roughness={0.18}
-          emissive="#8A6914"
-          emissiveIntensity={0.28}
+          color="#9E1B32"
+          metalness={0.85}
+          roughness={0.22}
+          emissive="#8B1E3F"
+          emissiveIntensity={0.55}
         />
       </mesh>
 
       <mesh ref={innerRingRef} rotation={[Math.PI / 3.2, -0.45, 0.3]}>
         <torusGeometry args={[1.65, 0.032, 24, 96]} />
         <meshStandardMaterial
-          color="#E8CC6C"
-          metalness={0.9}
+          color="#C83254"
+          metalness={0.82}
           roughness={0.2}
-          emissive="#A68621"
-          emissiveIntensity={0.25}
+          emissive="#9E1B32"
+          emissiveIntensity={0.45}
         />
       </mesh>
 
-      {/* Be da den sang trong + nen am trung tam */}
+      {/* Be da den + nen hong ruby & 2 ly ruou vang do */}
       <Float speed={1.6} rotationIntensity={0.18} floatIntensity={0.35}>
         <group position={[0, -0.15, 0]}>
-          {/* Mat ban tron cam thach den */}
           <mesh position={[0, 0, 0]}>
             <cylinderGeometry args={[1.05, 1.12, 0.12, 48]} />
-            <meshStandardMaterial color="#16161C" metalness={0.5} roughness={0.25} />
+            <meshStandardMaterial color="#16161C" metalness={0.55} roughness={0.25} />
           </mesh>
-          {/* Vien vang dong */}
           <mesh position={[0, 0.065, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[1.06, 0.02, 16, 64]} />
-            <meshStandardMaterial color="#D4AF37" metalness={0.95} roughness={0.15} />
+            <torusGeometry args={[1.06, 0.022, 16, 64]} />
+            <meshStandardMaterial
+              color="#C83254"
+              metalness={0.9}
+              roughness={0.18}
+              emissive="#8B1E3F"
+              emissiveIntensity={0.45}
+            />
           </mesh>
-          {/* Chan ban vang */}
           <mesh position={[0, -0.65, 0]}>
             <cylinderGeometry args={[0.1, 0.38, 1.2, 32]} />
-            <meshStandardMaterial color="#B89225" metalness={0.85} roughness={0.25} />
+            <meshStandardMaterial color="#4A0E1E" metalness={0.8} roughness={0.25} />
           </mesh>
-          {/* Den nen pha le trung tam */}
           <mesh position={[0, 0.24, 0]}>
             <cylinderGeometry args={[0.12, 0.14, 0.34, 24]} />
             <meshStandardMaterial
-              color="#FFF4D6"
-              emissive="#FFBE55"
-              emissiveIntensity={1.6}
+              color="#FFF0F3"
+              emissive="#E86B86"
+              emissiveIntensity={1.55}
               roughness={0.15}
             />
           </mesh>
-          {/* Hai ly ruou vang cach dieu */}
           {[-0.45, 0.45].map((x, idx) => (
             <group key={idx} position={[x, 0.08, 0.18]}>
               <mesh position={[0, 0.14, 0]}>
                 <cylinderGeometry args={[0.012, 0.012, 0.26, 12]} />
-                <meshStandardMaterial color="#E8CC6C" metalness={0.9} roughness={0.15} />
+                <meshStandardMaterial color="#E5D5D8" metalness={0.9} roughness={0.15} />
               </mesh>
               <mesh position={[0, 0.32, 0]}>
                 <cylinderGeometry args={[0.1, 0.055, 0.2, 20]} />
                 <meshStandardMaterial
-                  color="#6B1020"
-                  metalness={0.3}
+                  color="#9E1B32"
+                  emissive="#4A0E1E"
+                  emissiveIntensity={0.6}
+                  metalness={0.35}
                   roughness={0.12}
                   transparent
-                  opacity={0.88}
+                  opacity={0.92}
                 />
               </mesh>
               <mesh position={[0, 0.01, 0]}>
                 <cylinderGeometry args={[0.08, 0.08, 0.015, 16]} />
-                <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.2} />
+                <meshStandardMaterial color="#B8254E" metalness={0.9} roughness={0.2} />
               </mesh>
             </group>
           ))}
         </group>
       </Float>
 
-      {/* Hat anh sang vang am lo lung */}
+      {/* Hat anh sang do ruou vang & kem lo lung */}
       <Sparkles
-        count={70}
+        count={75}
         scale={[7, 5, 6]}
-        size={2.4}
+        size={2.5}
         speed={0.35}
-        opacity={0.75}
-        color="#E8CC6C"
+        opacity={0.8}
+        color="#E86B86"
       />
     </group>
   );
@@ -135,15 +137,15 @@ export default function HeroScene3D() {
         <color attach="background" args={['#0B0B0E']} />
         <fog attach="fog" args={['#0B0B0E', 7, 15]} />
 
-        <ambientLight intensity={0.45} color="#FFE7C2" />
-        <pointLight position={[3, 4, 3]} intensity={2.4} color="#FFD27D" distance={14} />
-        <pointLight position={[-3.5, 2, 2.5]} intensity={1.4} color="#D4AF37" distance={12} />
+        <ambientLight intensity={0.45} color="#FFE4E8" />
+        <pointLight position={[3, 4, 3]} intensity={2.6} color="#E86B86" distance={14} />
+        <pointLight position={[-3.5, 2, 2.5]} intensity={2.0} color="#9E1B32" distance={12} />
         <spotLight
           position={[0, 6, 2]}
           angle={0.5}
           penumbra={0.8}
           intensity={2.8}
-          color="#FFF0D4"
+          color="#FFF0F2"
         />
 
         <LuxuryCenterpiece />

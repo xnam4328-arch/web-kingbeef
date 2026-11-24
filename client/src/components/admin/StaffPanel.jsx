@@ -73,7 +73,7 @@ export default function StaffPanel({ branches = [] }) {
     <div className="space-y-5">
       <div className="glass-card p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif font-bold text-[#D4AF37]">
+          <h2 className="text-xl font-serif font-bold text-[#E86B86]">
             Quản Lý Nhân Sự &amp; Phân Quyền (RBAC)
           </h2>
           <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
@@ -81,7 +81,7 @@ export default function StaffPanel({ branches = [] }) {
             (Staff).
           </p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="btn-gold text-xs py-2 px-4">
+        <button onClick={() => setModalOpen(true)} className="btn-wine text-xs py-2 px-4">
           <UserPlus className="w-4 h-4" />
           Thêm nhân sự
         </button>
@@ -102,7 +102,7 @@ export default function StaffPanel({ branches = [] }) {
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#0B0B0E]/80 border-b border-white/10 text-[#D4AF37] uppercase text-[11px]">
+            <thead className="bg-[#0B0B0E]/80 border-b border-[#4A0E1E] text-[#E86B86] uppercase text-[11px]">
               <tr>
                 <th className="py-3.5 px-4">Họ tên</th>
                 <th className="py-3.5 px-4">Email &amp; SĐT</th>
@@ -122,7 +122,7 @@ export default function StaffPanel({ branches = [] }) {
                 staff.map((m) => (
                   <tr key={m.id} className="hover:bg-white/[0.02]">
                     <td className="py-3.5 px-4 font-semibold text-[#F5F0E6] flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      <ShieldCheck className="w-4 h-4 text-[#E86B86]" />
                       {m.fullName}
                     </td>
                     <td className="py-3.5 px-4 text-[#F5F0E6]/75">
@@ -136,7 +136,7 @@ export default function StaffPanel({ branches = [] }) {
                       <select
                         value={m.role}
                         onChange={(e) => handleRoleChange(m, e.target.value)}
-                        className="px-2.5 py-1.5 rounded-lg bg-[#0B0B0E] border border-[#D4AF37]/35 text-xs text-[#E8CC6C]"
+                        className="px-2.5 py-1.5 rounded-lg bg-[#0B0B0E] border border-[#9E1B32]/60 text-xs text-[#F5F0E6]"
                       >
                         <option value="admin">{ROLE_LABELS.admin}</option>
                         <option value="cashier">{ROLE_LABELS.cashier}</option>
@@ -160,7 +160,6 @@ export default function StaffPanel({ branches = [] }) {
         </div>
       </div>
 
-      {/* Modal them nhan su */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="glass-card max-w-md w-full p-6 relative">
@@ -170,7 +169,7 @@ export default function StaffPanel({ branches = [] }) {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="font-serif text-xl font-bold text-[#D4AF37] mb-4">
+            <h3 className="font-serif text-xl font-bold text-[#E86B86] mb-4">
               Tạo Tài Khoản Nhân Sự
             </h3>
             <form onSubmit={handleCreate} className="space-y-3.5 text-xs">
@@ -255,11 +254,11 @@ export default function StaffPanel({ branches = [] }) {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn-outline-gold text-xs py-2"
+                  className="btn-outline-wine text-xs py-2"
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn-gold text-xs py-2 px-5">
+                <button type="submit" className="btn-wine text-xs py-2 px-5">
                   Tạo tài khoản
                 </button>
               </div>

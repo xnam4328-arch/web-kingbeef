@@ -41,7 +41,6 @@ export default function ReservationsPanel({ branches = [] }) {
   const [feedback, setFeedback] = useState({ type: '', text: '' });
   const [busyId, setBusyId] = useState(null);
 
-  // State doi ban cho khach
   const [moveModal, setMoveModal] = useState(null);
   const [branchHallsTables, setBranchHallsTables] = useState([]);
   const [selectedNewTableId, setSelectedNewTableId] = useState('');
@@ -87,7 +86,6 @@ export default function ReservationsPanel({ branches = [] }) {
     const branch = branches.find((b) => b.id === booking.branchId);
     if (!branch) return;
 
-    // Tai trang thai ban cua tat ca sanh thuoc cung chi nhanh trong khung gio do
     try {
       const results = await Promise.all(
         (branch.halls || []).map((h) =>
@@ -112,11 +110,10 @@ export default function ReservationsPanel({ branches = [] }) {
 
   return (
     <div className="space-y-5">
-      {/* Header & Filters */}
       <div className="glass-card p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-serif font-bold text-[#D4AF37]">
+            <h2 className="text-xl font-serif font-bold text-[#E86B86]">
               Quản Lý Đặt Bàn &amp; Duyệt Cọc QR
             </h2>
             <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
@@ -124,10 +121,10 @@ export default function ReservationsPanel({ branches = [] }) {
                 ? 'Thu ngân: Duyệt cọc QR 1-click và xác nhận hoàn tất thanh toán.'
                 : user?.role === 'staff'
                 ? 'Phục vụ: Theo dõi lịch đặt bàn, Check-in khách đến và hỗ trợ đổi bàn.'
-                : 'Toàn quyền duyệt cọc QR, Check-in, đổi bàn, hoàn tất thanh toán & hủy đơn.'}
+                : 'Toàn quyền duyệt cọc QR, Check-in, đổi bàn, hoàn tất thanh toán & hủy đơn (mọi thao tác được ghi vào Audit Log).'}
             </p>
           </div>
-          <button onClick={loadReservations} className="btn-outline-gold text-xs py-2 px-3.5">
+          <button onClick={loadReservations} className="btn-outline-wine text-xs py-2 px-3.5">
             <RefreshCw className="w-3.5 h-3.5" />
             Làm mới
           </button>
@@ -168,7 +165,7 @@ export default function ReservationsPanel({ branches = [] }) {
             className="input-luxury text-xs"
           />
 
-          <button onClick={loadReservations} className="btn-gold text-xs py-2">
+          <button onClick={loadReservations} className="btn-wine text-xs py-2">
             Lọc danh sách
           </button>
         </div>
@@ -180,8 +177,8 @@ export default function ReservationsPanel({ branches = [] }) {
               onClick={() => setStatus(st.key)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap border transition-colors ${
                 status === st.key
-                  ? 'bg-[#D4AF37] text-[#0B0B0E] border-[#D4AF37]'
-                  : 'bg-[#0B0B0E]/70 text-[#F5F0E6]/75 border-white/10 hover:border-[#D4AF37]/40'
+                  ? 'bg-[#9E1B32] text-[#F5F0E6] border-[#C83254]'
+                  : 'bg-[#0B0B0E]/70 text-[#F5F0E6]/75 border-[#4A0E1E] hover:border-[#C83254]/60'
               }`}
             >
               {st.label}
@@ -190,7 +187,6 @@ export default function ReservationsPanel({ branches = [] }) {
         </div>
       </div>
 
-      {/* Feedback */}
       {feedback.text && (
         <div
           className={`p-3.5 rounded-xl text-xs border ${
@@ -203,7 +199,6 @@ export default function ReservationsPanel({ branches = [] }) {
         </div>
       )}
 
-      {/* List */}
       {loading ? (
         <div className="py-12 text-center text-sm text-[#F5F0E6]/60">Đang tải danh sách đơn...</div>
       ) : reservations.length === 0 ? (
@@ -221,45 +216,48 @@ export default function ReservationsPanel({ branches = [] }) {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <span className="font-mono font-bold text-sm text-[#D4AF37]">
+                      <span className="font-mono font-bold text-sm text-[#E86B86]">
                         {b.bookingCode}
                       </span>
                       <StatusBadge status={b.status} />
+                      {b.isGuestBooking && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#4A0E1E]/80 text-[#F5F0E6] border border-[#9E1B32]/60">
+                          Khách vãng lai
+                        </span>
+                      )}
                       <span className={`text-xs font-medium ${depMeta.className}`}>
                         • Cọc: {formatVND(b.depositAmount)} ({depMeta.label})
                       </span>
                     </div>
                     <div className="text-sm font-semibold text-[#F5F0E6]">
-                      {b.user?.fullName}{' '}
+                      {b.customerDisplayName}{' '}
                       <span className="font-normal text-xs text-[#F5F0E6]/65">
-                        ({b.user?.phone} • {b.user?.email})
+                        ({b.customerDisplayPhone}
+                        {b.customerDisplayEmail ? ` • ${b.customerDisplayEmail}` : ''})
                       </span>
                     </div>
                     <div className="text-xs text-[#F5F0E6]/75">
                       Chi nhánh <strong className="text-[#F5F0E6]">{b.branch?.name}</strong> •{' '}
                       {b.hall?.name} •{' '}
-                      <strong className="text-[#D4AF37]">Bàn {b.table?.tableNumber}</strong> •{' '}
+                      <strong className="text-[#E86B86]">Bàn {b.table?.tableNumber}</strong> •{' '}
                       {formatDateVN(b.reservationDate)} ({b.startTime} – {b.endTime}) •{' '}
                       {b.guestCount} khách
                     </div>
                   </div>
 
-                  {/* Nut thao tac theo RBAC */}
                   <div className="flex flex-wrap items-center gap-2">
-                    {/* Thu ngan / Admin: Duyet coc QR 1-click */}
                     {canApproveOrComplete &&
                       ['pending', 'waiting_deposit_confirm'].includes(b.status) && (
                         <button
                           disabled={isBusy}
                           onClick={() => runAction(b.id, 'approve-deposit')}
-                          className="btn-gold text-xs py-2 px-3.5"
+                          className="btn-wine text-xs py-2 px-3.5"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Duyệt cọc 1-click
                         </button>
                       )}
 
-                    {/* Phuc vu / Admin: Check-in */}
                     {canCheckInOrMove && ['confirmed', 'waiting_deposit_confirm'].includes(b.status) && (
                       <button
                         disabled={isBusy}
@@ -271,7 +269,6 @@ export default function ReservationsPanel({ branches = [] }) {
                       </button>
                     )}
 
-                    {/* Phuc vu / Admin: Doi ban */}
                     {canCheckInOrMove &&
                       ['pending', 'waiting_deposit_confirm', 'confirmed', 'checked_in'].includes(
                         b.status
@@ -279,14 +276,13 @@ export default function ReservationsPanel({ branches = [] }) {
                         <button
                           disabled={isBusy}
                           onClick={() => openChangeTableModal(b)}
-                          className="btn-outline-gold text-xs py-2 px-3"
+                          className="btn-outline-wine text-xs py-2 px-3"
                         >
                           <ArrowLeftRight className="w-3.5 h-3.5" />
                           Đổi bàn
                         </button>
                       )}
 
-                    {/* Thu ngan / Admin: Hoan tat thanh toan */}
                     {canApproveOrComplete && ['confirmed', 'checked_in'].includes(b.status) && (
                       <button
                         disabled={isBusy}
@@ -298,7 +294,6 @@ export default function ReservationsPanel({ branches = [] }) {
                       </button>
                     )}
 
-                    {/* Admin: Huy don */}
                     {isAdmin &&
                       ['pending', 'waiting_deposit_confirm', 'confirmed'].includes(b.status) && (
                         <button
@@ -317,7 +312,6 @@ export default function ReservationsPanel({ branches = [] }) {
                   </div>
                 </div>
 
-                {/* Chi tiet mon dat truoc & Ghi chu */}
                 {(b.items?.length > 0 || b.hasWinePromo || b.specialRequest) && (
                   <div className="pt-2.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs text-[#F5F0E6]/75">
                     <div className="flex flex-wrap items-center gap-2">
@@ -330,14 +324,14 @@ export default function ReservationsPanel({ branches = [] }) {
                         </span>
                       ))}
                       {b.hasWinePromo && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#D4AF37]/15 border border-[#D4AF37]/35 text-[#E8CC6C]">
-                          <Wine className="w-3 h-3" />
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#4A0E1E]/80 border border-[#9E1B32]/60 text-[#F5F0E6]">
+                          <Wine className="w-3 h-3 text-[#E86B86]" />
                           +2 ly vang 199k
                         </span>
                       )}
                     </div>
                     {b.specialRequest && (
-                      <div className="italic text-amber-200/85">Ghi chú: {b.specialRequest}</div>
+                      <div className="italic text-[#F08CA2]">Ghi chú: {b.specialRequest}</div>
                     )}
                   </div>
                 )}
@@ -347,7 +341,6 @@ export default function ReservationsPanel({ branches = [] }) {
         </div>
       )}
 
-      {/* Modal Doi ban */}
       {moveModal && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="glass-card max-w-lg w-full p-6 space-y-4 relative">
@@ -358,7 +351,7 @@ export default function ReservationsPanel({ branches = [] }) {
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="font-serif text-xl font-bold text-[#D4AF37]">
+            <h3 className="font-serif text-xl font-bold text-[#E86B86]">
               Đổi Bàn — {moveModal.bookingCode}
             </h3>
             <p className="text-xs text-[#F5F0E6]/70">
@@ -373,7 +366,7 @@ export default function ReservationsPanel({ branches = [] }) {
                 );
                 return (
                   <div key={group.hall.id} className="space-y-1.5">
-                    <div className="text-xs font-semibold text-[#D4AF37]">{group.hall.name}</div>
+                    <div className="text-xs font-semibold text-[#E86B86]">{group.hall.name}</div>
                     {avail.length === 0 ? (
                       <div className="text-[11px] text-[#F5F0E6]/45">Không còn bàn trống</div>
                     ) : (
@@ -385,8 +378,8 @@ export default function ReservationsPanel({ branches = [] }) {
                             onClick={() => setSelectedNewTableId(t.id)}
                             className={`px-3 py-1.5 rounded-lg text-xs border transition-colors ${
                               Number(selectedNewTableId) === t.id
-                                ? 'bg-[#D4AF37] text-[#0B0B0E] border-[#D4AF37] font-bold'
-                                : 'bg-[#0B0B0E] text-[#F5F0E6] border-emerald-500/40 hover:border-[#D4AF37]'
+                                ? 'bg-[#9E1B32] text-[#F5F0E6] border-[#C83254] font-bold'
+                                : 'bg-[#0B0B0E] text-[#F5F0E6] border-emerald-500/40 hover:border-[#C83254]'
                             }`}
                           >
                             Bàn {t.tableNumber} ({t.capacity}p)
@@ -400,13 +393,13 @@ export default function ReservationsPanel({ branches = [] }) {
             </div>
 
             <div className="flex justify-end gap-3 pt-2 border-t border-white/10">
-              <button onClick={() => setMoveModal(null)} className="btn-outline-gold text-xs py-2">
+              <button onClick={() => setMoveModal(null)} className="btn-outline-wine text-xs py-2">
                 Hủy
               </button>
               <button
                 disabled={!selectedNewTableId || busyId === moveModal.id}
                 onClick={handleConfirmChangeTable}
-                className="btn-gold text-xs py-2"
+                className="btn-wine text-xs py-2"
               >
                 Xác nhận đổi bàn
               </button>

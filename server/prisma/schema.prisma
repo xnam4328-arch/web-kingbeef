@@ -16,6 +16,7 @@ model Branch {
   halls        Hall[]
   users        User[]
   reservations Reservation[]
+  activityLogs ActivityLog[]
 }
 
 model Hall {
@@ -60,6 +61,7 @@ model User {
 
   branch       Branch?       @relation(fields: [branchId], references: [id], onDelete: SetNull)
   reservations Reservation[]
+  activityLogs ActivityLog[]
 }
 
 model MenuItem {
@@ -80,7 +82,10 @@ model MenuItem {
 model Reservation {
   id              Int               @id @default(autoincrement())
   bookingCode     String            @unique
-  userId          Int
+  userId          Int?              // Nullable de ho tro Guest Booking (khach vang lai)
+  guestName       String
+  guestPhone      String
+  guestEmail      String?
   branchId        Int
   hallId          Int
   tableId         Int
@@ -96,7 +101,7 @@ model Reservation {
   specialRequest  String?
   createdAt       DateTime          @default(now())
 
-  user            User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  user            User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
   branch          Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
   hall            Hall              @relation(fields: [hallId], references: [id], onDelete: Restrict)
   table           Table             @relation(fields: [tableId], references: [id], onDelete: Restrict)
@@ -104,6 +109,7 @@ model Reservation {
 
   @@index([branchId, reservationDate])
   @@index([tableId, reservationDate, status])
+  @@index([guestPhone])
 }
 
 model ReservationItem {
@@ -115,4 +121,22 @@ model ReservationItem {
 
   reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   menuItem      MenuItem    @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+}
+
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  branchId   Int?
+  action     String   // CONFIRM_DEPOSIT | CHECK_IN | COMPLETE_BOOKING | CANCEL_BOOKING | CHANGE_TABLE | UPDATE_STOCK | UPDATE_MENU | UPDATE_TABLE | MANAGE_STAFF
+  targetType String   // Reservation | MenuItem | Table | User
+  targetId   String?
+  details    String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  branch     Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@index([branchId, createdAt])
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
 }

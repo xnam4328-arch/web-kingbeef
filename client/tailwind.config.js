@@ -6,10 +6,13 @@ export default {
       colors: {
         obsidian: '#0B0B0E',
         charcoal: '#16161C',
-        gold: {
-          DEFAULT: '#D4AF37',
-          light: '#E8CC6C',
-          dark: '#A68621',
+        wine: {
+          DEFAULT: '#9E1B32',
+          deep: '#8B1E3F',
+          hover: '#B8254E',
+          bright: '#C83254',
+          light: '#E86B86',
+          dark: '#4A0E1E',
         },
         cream: '#F5F0E6',
       },
@@ -18,8 +21,8 @@ export default {
         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        gold: '0 0 30px rgba(212, 175, 55, 0.16)',
-        'gold-lg': '0 10px 40px rgba(212, 175, 55, 0.22)',
+        wine: '0 0 30px rgba(158, 27, 50, 0.28)',
+        'wine-lg': '0 10px 42px rgba(184, 37, 78, 0.32)',
       },
     },
   },

@@ -29,12 +29,12 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md glass-card p-8">
         <div className="text-center mb-7">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8C6D14] flex items-center justify-center mx-auto mb-3 shadow-gold">
-            <Crown className="w-6 h-6 text-[#0B0B0E]" />
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#B8254E] via-[#9E1B32] to-[#4A0E1E] flex items-center justify-center mx-auto mb-3 shadow-wine">
+            <Crown className="w-6 h-6 text-[#F5F0E6]" />
           </div>
           <h1 className="text-3xl font-serif font-bold text-[#F5F0E6]">Đăng Ký Thành Viên</h1>
           <p className="text-xs text-[#F5F0E6]/60 mt-1">
-            Tạo tài khoản để đặt bàn 3D và quản lý lịch hẹn tại KingBeef
+            Tạo tài khoản để lưu lịch sử đặt bàn và nhận ưu đãi từ KingBeef
           </p>
         </div>
 
@@ -49,7 +49,7 @@ export default function RegisterPage() {
           <div>
             <label className="block text-xs font-medium text-[#F5F0E6]/75 mb-1.5">Họ và tên</label>
             <div className="relative">
-              <User className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <User className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 required
@@ -64,7 +64,7 @@ export default function RegisterPage() {
           <div>
             <label className="block text-xs font-medium text-[#F5F0E6]/75 mb-1.5">Email</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
@@ -81,7 +81,7 @@ export default function RegisterPage() {
               Số điện thoại
             </label>
             <div className="relative">
-              <Phone className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Phone className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="tel"
                 required
@@ -98,7 +98,7 @@ export default function RegisterPage() {
               Mật khẩu (tối thiểu 6 ký tự)
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-[#D4AF37]/70 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-[#E86B86]/80 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 required
@@ -111,14 +111,14 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <button type="submit" disabled={submitting} className="btn-gold w-full py-3 mt-2">
+          <button type="submit" disabled={submitting} className="btn-wine w-full py-3 mt-2">
             {submitting ? 'Đang tạo tài khoản...' : 'Đăng ký tài khoản'}
           </button>
         </form>
 
         <p className="text-center text-xs text-[#F5F0E6]/60 mt-6">
           Đã có tài khoản?{' '}
-          <Link to="/login" className="text-[#D4AF37] hover:underline font-medium">
+          <Link to="/login" className="text-[#E86B86] hover:underline font-medium">
             Đăng nhập
           </Link>
         </p>

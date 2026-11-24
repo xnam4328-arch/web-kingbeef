@@ -122,10 +122,9 @@ export default function Tables3DPanel({ branches = [] }) {
 
   return (
     <div className="space-y-6">
-      {/* Header & Selector */}
       <div className="glass-card p-5 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-serif font-bold text-[#D4AF37]">
+          <h2 className="text-xl font-serif font-bold text-[#E86B86]">
             Quản Lý Bàn &amp; Tọa Độ Sơ Đồ 3D
           </h2>
           <p className="text-xs text-[#F5F0E6]/60 mt-0.5">
@@ -163,7 +162,7 @@ export default function Tables3DPanel({ branches = [] }) {
             ))}
           </select>
 
-          <button onClick={handleStartCreate} className="btn-gold text-xs py-2 px-4">
+          <button onClick={handleStartCreate} className="btn-wine text-xs py-2 px-4">
             <Plus className="w-4 h-4" />
             Thêm bàn mới
           </button>
@@ -183,7 +182,6 @@ export default function Tables3DPanel({ branches = [] }) {
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* 3D Preview */}
         <div className="xl:col-span-2">
           <HallMap3D
             hall={hallData}
@@ -194,9 +192,8 @@ export default function Tables3DPanel({ branches = [] }) {
             heightClass="h-[480px]"
           />
 
-          {/* Quick table chips (including maintenance tables which cannot be clicked in booking mode) */}
           <div className="mt-3 glass-card p-4">
-            <div className="text-xs font-semibold text-[#D4AF37] mb-2.5">
+            <div className="text-xs font-semibold text-[#E86B86] mb-2.5">
               Chọn nhanh bàn trong {hallData?.name} ({tables.length} bàn — bao gồm bàn bảo trì):
             </div>
             <div className="flex flex-wrap gap-2">
@@ -207,10 +204,10 @@ export default function Tables3DPanel({ branches = [] }) {
                   onClick={() => handleSelectTable(t)}
                   className={`px-3 py-1.5 rounded-lg text-xs border transition-colors inline-flex items-center gap-1.5 ${
                     selectedTable?.id === t.id
-                      ? 'bg-[#D4AF37] text-[#0B0B0E] border-[#D4AF37] font-bold'
+                      ? 'bg-[#9E1B32] text-[#F5F0E6] border-[#C83254] font-bold'
                       : t.status === 'maintenance'
                       ? 'bg-gray-500/15 text-gray-300 border-gray-500/40'
-                      : 'bg-[#0B0B0E] text-[#F5F0E6] border-white/10 hover:border-[#D4AF37]/50'
+                      : 'bg-[#0B0B0E] text-[#F5F0E6] border-[#4A0E1E] hover:border-[#C83254]'
                   }`}
                 >
                   {t.status === 'maintenance' && <Wrench className="w-3 h-3" />}
@@ -221,7 +218,6 @@ export default function Tables3DPanel({ branches = [] }) {
           </div>
         </div>
 
-        {/* Form chinh sua / them ban */}
         <div className="glass-card p-5 h-fit">
           {!selectedTable && !isCreating ? (
             <div className="py-12 text-center text-xs text-[#F5F0E6]/60 space-y-2">
@@ -230,7 +226,7 @@ export default function Tables3DPanel({ branches = [] }) {
             </div>
           ) : (
             <form onSubmit={handleSave} className="space-y-4">
-              <h3 className="font-serif text-lg font-bold text-[#D4AF37]">
+              <h3 className="font-serif text-lg font-bold text-[#E86B86]">
                 {isCreating ? `Thêm Bàn Vào ${hallData?.name}` : `Chỉnh Sửa Bàn #${selectedTable.tableNumber}`}
               </h3>
 
@@ -309,7 +305,7 @@ export default function Tables3DPanel({ branches = [] }) {
               </div>
 
               <div className="flex items-center gap-2 pt-2">
-                <button type="submit" disabled={saving} className="btn-gold flex-1 text-xs py-2.5">
+                <button type="submit" disabled={saving} className="btn-wine flex-1 text-xs py-2.5">
                   <Save className="w-4 h-4" />
                   {saving ? 'Đang lưu...' : isCreating ? 'Tạo bàn 3D' : 'Lưu thay đổi'}
                 </button>
@@ -328,7 +324,7 @@ export default function Tables3DPanel({ branches = [] }) {
 
               {!isCreating && selectedTable && (
                 <div className="text-[11px] text-[#F5F0E6]/50 flex items-center gap-1.5 pt-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#E86B86]" />
                   Thay đổi tọa độ sẽ cập nhật trực tiếp lên mô hình 3D ngay sau khi lưu.
                 </div>
               )}

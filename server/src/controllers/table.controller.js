@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma');
+const { logActivity } = require('../lib/activityLog');
 
 async function createTable(req, res, next) {
   try {
@@ -22,7 +23,17 @@ async function createTable(req, res, next) {
         posZ: Number(posZ),
         status,
       },
+      include: { hall: true },
     });
+
+    await logActivity(
+      req.user,
+      'UPDATE_TABLE',
+      'Table',
+      table.tableNumber,
+      `Thêm Bàn số ${table.tableNumber} (${table.capacity} khách) vào ${table.hall.name}`,
+      table.hall.branchId
+    );
 
     res.status(201).json({ message: 'Thêm bàn 3D thành công.', table });
   } catch (err) {
@@ -49,7 +60,17 @@ async function updateTable(req, res, next) {
         ...(posZ !== undefined && { posZ: Number(posZ) }),
         ...(status !== undefined && { status }),
       },
+      include: { hall: true },
     });
+
+    await logActivity(
+      req.user,
+      'UPDATE_TABLE',
+      'Table',
+      table.tableNumber,
+      `Cập nhật Bàn số ${table.tableNumber} (${table.hall.name}): sức chứa ${table.capacity}, tọa độ (${table.posX}, ${table.posY}, ${table.posZ}), trạng thái ${table.status}`,
+      table.hall.branchId
+    );
 
     res.json({ message: 'Cập nhật bàn 3D thành công.', table });
   } catch (err) {
@@ -60,6 +81,11 @@ async function updateTable(req, res, next) {
 async function deleteTable(req, res, next) {
   try {
     const id = Number(req.params.id);
+    const existing = await prisma.table.findUnique({ where: { id }, include: { hall: true } });
+    if (!existing) {
+      return res.status(404).json({ message: 'Không tìm thấy bàn.' });
+    }
+
     const activeCount = await prisma.reservation.count({
       where: {
         tableId: id,
@@ -81,6 +107,16 @@ async function deleteTable(req, res, next) {
     }
 
     await prisma.table.delete({ where: { id } });
+
+    await logActivity(
+      req.user,
+      'UPDATE_TABLE',
+      'Table',
+      existing.tableNumber,
+      `Xóa Bàn số ${existing.tableNumber} khỏi ${existing.hall.name}`,
+      existing.hall.branchId
+    );
+
     res.json({ message: 'Xóa bàn thành công.' });
   } catch (err) {
     next(err);

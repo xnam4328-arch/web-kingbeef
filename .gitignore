@@ -19,3 +19,6 @@ server/prisma/*.db-journal
 npm-debug.log*
 .DS_Store
 Thumbs.db
+
+# Large raw print PDFs
+*.pdf

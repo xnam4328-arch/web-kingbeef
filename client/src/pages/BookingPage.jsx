@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Check, Lock } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Check, Sparkles, Search } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { getTodayYMD } from '../utils/format';
@@ -10,7 +10,7 @@ import Step3PreOrderMenu from '../components/booking/Step3PreOrderMenu';
 import Step4DepositQR from '../components/booking/Step4DepositQR';
 
 const STEPS = [
-  { id: 1, title: 'Chi nhánh & Sảnh' },
+  { id: 1, title: 'Thông tin & Sảnh' },
   { id: 2, title: 'Chọn bàn 3D' },
   { id: 3, title: 'Đặt món trước' },
   { id: 4, title: 'Đặt cọc VietQR' },
@@ -18,7 +18,6 @@ const STEPS = [
 
 export default function BookingPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [step, setStep] = useState(1);
@@ -26,7 +25,20 @@ export default function BookingPage() {
   const [selectedBranchId, setSelectedBranchId] = useState(null);
   const [selectedHallId, setSelectedHallId] = useState(null);
 
-  // Mac dinh ngay mai de dat Beef Wellington / King & Queen (4h) thuan tien
+  // Thong tin khach dat ban (ho tro Guest Booking khong can dang nhap)
+  const [guestName, setGuestName] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
+
+  // Tu dong dien san neu khach da dang nhap
+  useEffect(() => {
+    if (user) {
+      setGuestName((prev) => prev || user.fullName || '');
+      setGuestPhone((prev) => prev || user.phone || '');
+      setGuestEmail((prev) => prev || user.email || '');
+    }
+  }, [user]);
+
   const defaultDate = (() => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -66,8 +78,8 @@ export default function BookingPage() {
   }, [searchParams]);
 
   const handleSubmitBooking = async () => {
-    if (!user) {
-      navigate('/login', { state: { from: '/booking' } });
+    if (!guestName.trim() || !guestPhone.trim()) {
+      setSubmitError('Vui lòng nhập Họ tên và Số điện thoại ở Bước 1 trước khi đặt bàn.');
       return;
     }
 
@@ -86,6 +98,9 @@ export default function BookingPage() {
         reservationDate,
         startTime,
         guestCount: Number(guestCount),
+        guestName: guestName.trim(),
+        guestPhone: guestPhone.trim(),
+        guestEmail: guestEmail.trim() || null,
         items,
         hasWinePromo,
         specialRequest,
@@ -101,20 +116,26 @@ export default function BookingPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="text-xs uppercase tracking-[0.25em] text-[#D4AF37]">
+      <div className="text-center space-y-2.5">
+        <div className="text-xs uppercase tracking-[0.25em] text-[#E86B86]">
           KingBeef 3D Reservation
         </div>
         <h1 className="text-3xl sm:text-4xl font-serif font-bold">
           Đặt Bàn Trực Quan Trên Sơ Đồ 3D
         </h1>
-        {!user && (
-          <div className="inline-flex items-center gap-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1.5 rounded-full">
-            <Lock className="w-3.5 h-3.5" />
-            Bạn có thể xem sơ đồ 3D ngay; hệ thống sẽ yêu cầu đăng nhập ở bước xác nhận tạo mã QR.
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="inline-flex items-center gap-2 text-xs text-[#F5F0E6] bg-[#4A0E1E]/60 border border-[#9E1B32]/65 px-3.5 py-1.5 rounded-full">
+            <Sparkles className="w-3.5 h-3.5 text-[#E86B86]" />
+            Đặt bàn nhanh không cần đăng nhập • Chỉ cần nhập Họ tên &amp; Số điện thoại
           </div>
-        )}
+          <Link
+            to="/lookup"
+            className="inline-flex items-center gap-1.5 text-xs text-[#E86B86] hover:underline font-medium"
+          >
+            <Search className="w-3.5 h-3.5" />
+            Đã đặt bàn? Tra cứu đơn tại đây
+          </Link>
+        </div>
       </div>
 
       {/* Stepper 4 buoc */}
@@ -127,16 +148,16 @@ export default function BookingPage() {
               key={s.id}
               className={`p-3 rounded-xl border flex items-center gap-3 transition-all ${
                 isCurrent
-                  ? 'bg-[#D4AF37]/15 border-[#D4AF37] shadow-gold'
+                  ? 'bg-[#9E1B32]/25 border-[#C83254] shadow-wine'
                   : isCompleted
                   ? 'bg-emerald-500/10 border-emerald-500/35'
-                  : 'bg-[#16161C]/70 border-white/10 opacity-65'
+                  : 'bg-[#16161C]/70 border-[#4A0E1E]/60 opacity-65'
               }`}
             >
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                   isCurrent
-                    ? 'bg-[#D4AF37] text-[#0B0B0E]'
+                    ? 'bg-[#9E1B32] text-[#F5F0E6]'
                     : isCompleted
                     ? 'bg-emerald-500 text-[#0B0B0E]'
                     : 'bg-white/10 text-[#F5F0E6]'
@@ -165,6 +186,13 @@ export default function BookingPage() {
             setStartTime={setStartTime}
             guestCount={guestCount}
             setGuestCount={setGuestCount}
+            guestName={guestName}
+            setGuestName={setGuestName}
+            guestPhone={guestPhone}
+            setGuestPhone={setGuestPhone}
+            guestEmail={guestEmail}
+            setGuestEmail={setGuestEmail}
+            isLoggedIn={Boolean(user)}
             onNext={() => {
               setSelectedTable(null);
               setStep(2);
@@ -189,6 +217,8 @@ export default function BookingPage() {
           <Step3PreOrderMenu
             reservationDate={reservationDate}
             startTime={startTime}
+            guestName={guestName}
+            guestPhone={guestPhone}
             cart={cart}
             setCart={setCart}
             hasWinePromo={hasWinePromo}

@@ -1,5 +1,6 @@
 const prisma = require('../lib/prisma');
 const { buildVietQR } = require('../lib/vietqr');
+const { logActivity } = require('../lib/activityLog');
 const {
   addHoursToTime,
   isTimeOverlapping,
@@ -39,6 +40,10 @@ function attachReservationExtras(reservation) {
   );
   return {
     ...reservation,
+    customerDisplayName: reservation.guestName || reservation.user?.fullName || 'Khách vãng lai',
+    customerDisplayPhone: reservation.guestPhone || reservation.user?.phone || '',
+    customerDisplayEmail: reservation.guestEmail || reservation.user?.email || '',
+    isGuestBooking: !reservation.userId,
     qrPayment: buildVietQR({
       bookingCode: reservation.bookingCode,
       amount: reservation.depositAmount,
@@ -57,6 +62,9 @@ async function createReservation(req, res, next) {
       reservationDate,
       startTime,
       guestCount,
+      guestName,
+      guestPhone,
+      guestEmail,
       items = [],
       hasWinePromo = false,
       specialRequest = '',
@@ -65,6 +73,16 @@ async function createReservation(req, res, next) {
     if (!branchId || !hallId || !tableId || !reservationDate || !startTime || !guestCount) {
       return res.status(400).json({
         message: 'Vui lòng cung cấp đầy đủ chi nhánh, sảnh, bàn, ngày, khung giờ và số lượng khách.',
+      });
+    }
+
+    const finalGuestName = (guestName || req.user?.fullName || '').trim();
+    const finalGuestPhone = (guestPhone || req.user?.phone || '').trim();
+    const finalGuestEmail = (guestEmail || req.user?.email || '').trim() || null;
+
+    if (!finalGuestName || !finalGuestPhone) {
+      return res.status(400).json({
+        message: 'Vui lòng nhập Họ tên và Số điện thoại để nhà hàng xác nhận đặt bàn.',
       });
     }
 
@@ -82,7 +100,6 @@ async function createReservation(req, res, next) {
 
     const endTime = addHoursToTime(startTime, 2);
 
-    // Kiem tra thu bac chi nhanh -> sanh -> ban
     const table = await prisma.table.findUnique({
       where: { id: Number(tableId) },
       include: { hall: { include: { branch: true } } },
@@ -96,9 +113,7 @@ async function createReservation(req, res, next) {
       return res.status(400).json({ message: `Bàn số ${table.tableNumber} hiện đang bảo trì.` });
     }
 
-    // Chay transaction de chong race-condition dat trung ban & tru ton kho chinh xac
     const createdReservation = await prisma.$transaction(async (tx) => {
-      // 1. Khoa khung gio 2 tieng chong dat trung
       const existingBookings = await tx.reservation.findMany({
         where: {
           tableId: table.id,
@@ -120,13 +135,11 @@ async function createReservation(req, res, next) {
         throw err;
       }
 
-      // 2. Kiem tra mon dat truoc (Pre-order)
       let preOrderTotal = 0;
       let hasCoupleSet = false;
       const preparedItems = [];
 
       if (Array.isArray(items) && items.length > 0) {
-        // Gop so luong neu trung menuItemId
         const qtyMap = new Map();
         for (const row of items) {
           const id = Number(row.menuItemId);
@@ -157,7 +170,6 @@ async function createReservation(req, res, next) {
             throw err;
           }
 
-          // Quy tac dat truoc 4 gio cho Beef Wellington Premium & King & Queen
           if (menuItem.requiresAdvanceOrderHours > 0 && hoursAhead < menuItem.requiresAdvanceOrderHours) {
             const err = new Error(
               `Món "${menuItem.name}" yêu cầu đặt trước tối thiểu ${menuItem.requiresAdvanceOrderHours} giờ so với giờ dùng bữa.`
@@ -177,7 +189,6 @@ async function createReservation(req, res, next) {
             unitPrice: menuItem.price,
           });
 
-          // Tru ton kho & tu dong tat isAvailable neu ve 0
           const nextStock = menuItem.stockQuantity - qty;
           await tx.menuItem.update({
             where: { id: menuItem.id },
@@ -189,7 +200,6 @@ async function createReservation(req, res, next) {
         }
       }
 
-      // Quy tac uu dai 2 ly ruou vang 199.000d khi chon Couple Set
       const applyWinePromo = Boolean(hasWinePromo);
       if (applyWinePromo && !hasCoupleSet) {
         const err = new Error(
@@ -210,7 +220,10 @@ async function createReservation(req, res, next) {
       return tx.reservation.create({
         data: {
           bookingCode,
-          userId: req.user.id,
+          userId: req.user ? req.user.id : null,
+          guestName: finalGuestName,
+          guestPhone: finalGuestPhone,
+          guestEmail: finalGuestEmail,
           branchId: table.hall.branchId,
           hallId: table.hallId,
           tableId: table.id,
@@ -233,6 +246,59 @@ async function createReservation(req, res, next) {
     res.status(201).json({
       message: 'Đặt bàn thành công! Vui lòng quét mã VietQR để hoàn tất đặt cọc giữ bàn.',
       reservation: attachReservationExtras(createdReservation),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Public lookup: tra cuu bang BookingCode hoac So dien thoai (khong can dang nhap)
+async function lookupReservation(req, res, next) {
+  try {
+    const rawQuery = (req.params.bookingCode || req.query.q || '').trim();
+    if (!rawQuery) {
+      return res.status(400).json({ message: 'Vui lòng nhập Mã đặt bàn hoặc Số điện thoại để tra cứu.' });
+    }
+
+    const normalizedUpper = rawQuery.toUpperCase();
+    const cleanedPhone = rawQuery.replace(/\s+/g, '');
+
+    const byCode = await prisma.reservation.findUnique({
+      where: { bookingCode: normalizedUpper },
+      include: RESERVATION_INCLUDE,
+    });
+
+    if (byCode) {
+      const formatted = attachReservationExtras(byCode);
+      return res.json({
+        reservation: formatted,
+        reservations: [formatted],
+      });
+    }
+
+    const byPhone = await prisma.reservation.findMany({
+      where: {
+        OR: [
+          { guestPhone: rawQuery },
+          { guestPhone: cleanedPhone },
+          { user: { phone: rawQuery } },
+        ],
+      },
+      include: RESERVATION_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+      take: 15,
+    });
+
+    if (byPhone.length === 0) {
+      return res.status(404).json({
+        message: `Không tìm thấy đơn đặt bàn nào khớp với "${rawQuery}". Vui lòng kiểm tra lại Mã đặt bàn hoặc Số điện thoại.`,
+      });
+    }
+
+    const formattedList = byPhone.map(attachReservationExtras);
+    res.json({
+      reservation: formattedList[0],
+      reservations: formattedList,
     });
   } catch (err) {
     next(err);
@@ -264,8 +330,16 @@ async function confirmTransfer(req, res, next) {
       return res.status(404).json({ message: 'Không tìm thấy đơn đặt bàn.' });
     }
 
-    if (req.user.role === 'customer' && reservation.userId !== req.user.id) {
-      return res.status(403).json({ message: 'Bạn không có quyền thao tác trên đơn đặt bàn này.' });
+    if (req.user) {
+      if (req.user.role === 'customer' && reservation.userId && reservation.userId !== req.user.id) {
+        return res.status(403).json({ message: 'Bạn không có quyền thao tác trên đơn đặt bàn này.' });
+      }
+    } else {
+      // Khach vang lai xac nhan chuyen khoan bang ma bookingCode tuong ung
+      const providedCode = String(req.body?.bookingCode || '').trim().toUpperCase();
+      if (!providedCode || providedCode !== reservation.bookingCode) {
+        return res.status(403).json({ message: 'Mã đặt bàn xác thực không khớp.' });
+      }
     }
 
     if (reservation.status !== 'pending') {
@@ -297,7 +371,7 @@ async function cancelReservation(req, res, next) {
     const id = Number(req.params.id);
     const reservation = await prisma.reservation.findUnique({
       where: { id },
-      include: { items: true },
+      include: { items: true, hall: true, table: true },
     });
 
     if (!reservation) {
@@ -318,13 +392,12 @@ async function cancelReservation(req, res, next) {
       const hoursLeft = hoursUntilReservation(reservation.reservationDate, reservation.startTime);
       if (hoursLeft < 2) {
         return res.status(400).json({
-          message: 'Chỉ có thể hủy đơn đặt bàn trước giờ ăn tối thiểu 2 tiếng. Vui lòng liên hệ hotline nhà hàng.',
+          message: 'Chỉ có thể hủy đơn đặt bàn trước giờ ăn tối thiểu 2 tiếng. Vui lòng liên hệ hotline 0562 275 375.',
         });
       }
     }
 
     const updated = await prisma.$transaction(async (tx) => {
-      // Hoan tra ton kho mon dat truoc
       for (const item of reservation.items) {
         const menu = await tx.menuItem.findUnique({ where: { id: item.menuItemId } });
         if (menu) {
@@ -345,6 +418,15 @@ async function cancelReservation(req, res, next) {
         include: RESERVATION_INCLUDE,
       });
     });
+
+    await logActivity(
+      req.user,
+      'CANCEL_BOOKING',
+      'Reservation',
+      updated.bookingCode,
+      `Hủy đơn đặt bàn ${updated.bookingCode} của khách ${updated.guestName} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
+      updated.branchId
+    );
 
     res.json({
       message: 'Đã hủy đơn đặt bàn thành công.',
@@ -384,9 +466,11 @@ async function getAllReservations(req, res, next) {
       reservations = reservations.filter(
         (r) =>
           r.bookingCode.toLowerCase().includes(kw) ||
-          r.user.fullName.toLowerCase().includes(kw) ||
-          r.user.phone.toLowerCase().includes(kw) ||
-          r.user.email.toLowerCase().includes(kw)
+          (r.guestName || '').toLowerCase().includes(kw) ||
+          (r.guestPhone || '').toLowerCase().includes(kw) ||
+          (r.guestEmail || '').toLowerCase().includes(kw) ||
+          (r.user?.fullName || '').toLowerCase().includes(kw) ||
+          (r.user?.phone || '').toLowerCase().includes(kw)
       );
     }
 
@@ -420,6 +504,15 @@ async function approveDeposit(req, res, next) {
       include: RESERVATION_INCLUDE,
     });
 
+    await logActivity(
+      req.user,
+      'CONFIRM_DEPOSIT',
+      'Reservation',
+      updated.bookingCode,
+      `Duyệt cọc QR ${updated.depositAmount.toLocaleString('vi-VN')}đ cho đơn ${updated.bookingCode} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
+      updated.branchId
+    );
+
     res.json({
       message: `Đã xác nhận tiền cọc cho đơn ${updated.bookingCode}.`,
       reservation: attachReservationExtras(updated),
@@ -448,6 +541,15 @@ async function checkInReservation(req, res, next) {
       include: RESERVATION_INCLUDE,
     });
 
+    await logActivity(
+      req.user,
+      'CHECK_IN',
+      'Reservation',
+      updated.bookingCode,
+      `Check-in khách ${updated.guestName} tại đơn ${updated.bookingCode} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
+      updated.branchId
+    );
+
     res.json({
       message: `Check-in thành công cho đơn ${updated.bookingCode} (Bàn ${updated.table.tableNumber}).`,
       reservation: attachReservationExtras(updated),
@@ -466,7 +568,10 @@ async function changeTable(req, res, next) {
       return res.status(400).json({ message: 'Vui lòng chọn bàn mới cần chuyển.' });
     }
 
-    const reservation = await prisma.reservation.findUnique({ where: { id } });
+    const reservation = await prisma.reservation.findUnique({
+      where: { id },
+      include: { hall: true, table: true },
+    });
     if (!reservation) {
       return res.status(404).json({ message: 'Không tìm thấy đơn đặt bàn.' });
     }
@@ -512,6 +617,9 @@ async function changeTable(req, res, next) {
       });
     }
 
+    const oldDesc = `${reservation.hall.name} - Bàn ${reservation.table.tableNumber}`;
+    const newDesc = `${targetTable.hall.name} - Bàn ${targetTable.tableNumber}`;
+
     const updated = await prisma.reservation.update({
       where: { id },
       data: {
@@ -521,8 +629,17 @@ async function changeTable(req, res, next) {
       include: RESERVATION_INCLUDE,
     });
 
+    await logActivity(
+      req.user,
+      'CHANGE_TABLE',
+      'Reservation',
+      updated.bookingCode,
+      `Đổi bàn đơn ${updated.bookingCode} từ ${oldDesc} sang ${newDesc}`,
+      updated.branchId
+    );
+
     res.json({
-      message: `Đã đổi đơn ${updated.bookingCode} sang ${targetTable.hall.name} - Bàn ${targetTable.tableNumber}.`,
+      message: `Đã đổi đơn ${updated.bookingCode} sang ${newDesc}.`,
       reservation: attachReservationExtras(updated),
     });
   } catch (err) {
@@ -552,6 +669,15 @@ async function completeReservation(req, res, next) {
       include: RESERVATION_INCLUDE,
     });
 
+    await logActivity(
+      req.user,
+      'COMPLETE_BOOKING',
+      'Reservation',
+      updated.bookingCode,
+      `Hoàn tất thanh toán đơn ${updated.bookingCode} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
+      updated.branchId
+    );
+
     res.json({
       message: `Đã hoàn tất thanh toán cho đơn ${updated.bookingCode}.`,
       reservation: attachReservationExtras(updated),
@@ -563,6 +689,7 @@ async function completeReservation(req, res, next) {
 
 module.exports = {
   createReservation,
+  lookupReservation,
   getMyReservations,
   confirmTransfer,
   cancelReservation,

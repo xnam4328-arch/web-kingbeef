@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   createReservation,
+  lookupReservation,
   getMyReservations,
   confirmTransfer,
   cancelReservation,
@@ -10,14 +11,18 @@ const {
   changeTable,
   completeReservation,
 } = require('../controllers/reservation.controller');
-const { authenticate, authorize } = require('../middlewares/auth.middleware');
+const { authenticate, optionalAuthenticate, authorize } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
-// Khach hang & Admin
-router.post('/', authenticate, authorize('customer', 'admin'), createReservation);
+// Public / Guest Booking & Tra cuu don khong can dang nhap
+router.post('/', optionalAuthenticate, createReservation);
+router.get('/lookup', lookupReservation);
+router.get('/lookup/:bookingCode', lookupReservation);
+router.patch('/:id/confirm-transfer', optionalAuthenticate, confirmTransfer);
+
+// Tai khoan khach hang / da dang nhap
 router.get('/my', authenticate, getMyReservations);
-router.patch('/:id/confirm-transfer', authenticate, authorize('customer', 'admin'), confirmTransfer);
 router.patch('/:id/cancel', authenticate, authorize('customer', 'admin'), cancelReservation);
 
 // Van hanh: Staff / Cashier / Admin

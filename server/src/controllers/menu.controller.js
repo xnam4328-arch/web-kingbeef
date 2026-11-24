@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma');
+const { logActivity } = require('../lib/activityLog');
 
 const VALID_CATEGORIES = [
   'Appetizers',
@@ -98,6 +99,14 @@ async function createMenuItem(req, res, next) {
       },
     });
 
+    await logActivity(
+      req.user,
+      'UPDATE_MENU',
+      'MenuItem',
+      item.id,
+      `Thêm món mới "${item.name}" (${item.category}) - Giá ${item.price.toLocaleString('vi-VN')}đ, tồn kho ${item.stockQuantity}`
+    );
+
     res.status(201).json({ message: 'Thêm món ăn thành công.', item });
   } catch (err) {
     next(err);
@@ -127,7 +136,6 @@ async function updateMenuItem(req, res, next) {
     const nextStock =
       stockQuantity !== undefined ? Math.max(0, Number(stockQuantity)) : existing.stockQuantity;
 
-    // Quy tac bat buoc: tu dong chuyen isAvailable = false khi ton kho ve 0
     let nextAvailable = isAvailable !== undefined ? Boolean(isAvailable) : existing.isAvailable;
     if (nextStock === 0) {
       nextAvailable = false;
@@ -151,6 +159,22 @@ async function updateMenuItem(req, res, next) {
         }),
       },
     });
+
+    const isStockOnly =
+      stockQuantity !== undefined &&
+      name === undefined &&
+      price === undefined &&
+      category === undefined;
+
+    await logActivity(
+      req.user,
+      isStockOnly ? 'UPDATE_STOCK' : 'UPDATE_MENU',
+      'MenuItem',
+      item.id,
+      isStockOnly
+        ? `Cập nhật tồn kho món "${item.name}": ${existing.stockQuantity} → ${item.stockQuantity} (${item.isAvailable ? 'Đang bán' : 'Hết món'})`
+        : `Cập nhật thông tin món "${item.name}" — Giá ${item.price.toLocaleString('vi-VN')}đ, tồn kho ${item.stockQuantity}`
+    );
 
     res.json({ message: 'Cập nhật thực đơn & tồn kho thành công.', item });
   } catch (err) {
@@ -186,6 +210,14 @@ async function toggleAvailability(req, res, next) {
       },
     });
 
+    await logActivity(
+      req.user,
+      'UPDATE_STOCK',
+      'MenuItem',
+      item.id,
+      `${item.isAvailable ? 'Mở bán lại' : 'Báo hết món'} "${item.name}" (tồn kho hiện tại: ${item.stockQuantity})`
+    );
+
     res.json({
       message: item.isAvailable ? 'Đã mở bán món ăn.' : 'Đã chuyển sang trạng thái Hết món.',
       item,
@@ -198,6 +230,10 @@ async function toggleAvailability(req, res, next) {
 async function deleteMenuItem(req, res, next) {
   try {
     const id = Number(req.params.id);
+    const existing = await prisma.menuItem.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ message: 'Không tìm thấy món ăn.' });
+    }
     const usedCount = await prisma.reservationItem.count({ where: { menuItemId: id } });
     if (usedCount > 0) {
       return res.status(400).json({
@@ -205,6 +241,15 @@ async function deleteMenuItem(req, res, next) {
       });
     }
     await prisma.menuItem.delete({ where: { id } });
+
+    await logActivity(
+      req.user,
+      'UPDATE_MENU',
+      'MenuItem',
+      id,
+      `Xóa món ăn "${existing.name}" khỏi thực đơn`
+    );
+
     res.json({ message: 'Xóa món ăn thành công.' });
   } catch (err) {
     next(err);
