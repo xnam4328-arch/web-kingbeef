@@ -10,6 +10,10 @@ const {
   checkInReservation,
   changeTable,
   completeReservation,
+  exportReservationsExcel,
+  getExcelSyncConfig,
+  updateExcelSyncConfig,
+  triggerExcelSyncNow,
 } = require('../controllers/reservation.controller');
 const { authenticate, optionalAuthenticate, authorize } = require('../middlewares/auth.middleware');
 
@@ -19,10 +23,16 @@ const router = express.Router();
 router.post('/', optionalAuthenticate, createReservation);
 router.get('/lookup', lookupReservation);
 router.get('/lookup/:bookingCode', lookupReservation);
-router.patch('/:id/confirm-transfer', optionalAuthenticate, confirmTransfer);
+
+// Xuat Excel & Cau hinh dong bo Excel / Google Sheets
+router.get('/export-excel', authenticate, authorize('staff', 'cashier', 'admin'), exportReservationsExcel);
+router.get('/excel-sync/config', authenticate, authorize('staff', 'cashier', 'admin'), getExcelSyncConfig);
+router.put('/excel-sync/config', authenticate, authorize('admin'), updateExcelSyncConfig);
+router.post('/excel-sync/sync-now', authenticate, authorize('staff', 'cashier', 'admin'), triggerExcelSyncNow);
 
 // Tai khoan khach hang / da dang nhap
 router.get('/my', authenticate, getMyReservations);
+router.patch('/:id/confirm-transfer', optionalAuthenticate, confirmTransfer);
 router.patch('/:id/cancel', authenticate, authorize('customer', 'admin'), cancelReservation);
 
 // Van hanh: Staff / Cashier / Admin

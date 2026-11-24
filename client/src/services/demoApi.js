@@ -1,5 +1,11 @@
 import { createInitialDemoDB } from './demoData';
 import { addTwoHours, getHoursUntil, getTodayYMD } from '../utils/format';
+import {
+  formatReservationForExcel,
+  getClientExcelSyncConfig,
+  pushClientWebhook,
+  saveClientExcelSyncConfig,
+} from '../utils/excelExport';
 
 const STORAGE_KEY = 'kingbeef_static_demo_db_v1';
 const ACTIVE_STATUSES = ['pending', 'waiting_deposit_confirm', 'confirmed', 'checked_in'];
@@ -420,9 +426,53 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
 
     db.reservations.unshift(created);
     saveDB(db);
+    const hydratedCreated = hydrateReservation(db, created);
+    pushClientWebhook({
+      event: 'CREATED',
+      syncedAt: new Date().toISOString(),
+      row: formatReservationForExcel(hydratedCreated),
+    }).catch(() => {});
     return {
       message: 'Đặt bàn thành công! Vui lòng quét mã VietQR để hoàn tất đặt cọc.',
-      reservation: hydrateReservation(db, created),
+      reservation: hydratedCreated,
+    };
+  }
+
+  // ---------------- EXCEL SYNC (Static / GitHub Pages Mode) ----------------
+  if (method === 'GET' && pathname === '/reservations/excel-sync/config') {
+    requireRole(currentUser, ['staff', 'cashier', 'admin']);
+    return { config: getClientExcelSyncConfig() };
+  }
+
+  if (method === 'PUT' && pathname === '/reservations/excel-sync/config') {
+    requireRole(currentUser, ['admin']);
+    const config = saveClientExcelSyncConfig({
+      webhookUrl: (body?.webhookUrl || '').trim(),
+      autoSync: body?.autoSync !== false,
+    });
+    return { message: 'Đã lưu cấu hình liên kết Excel / Google Sheets.', config };
+  }
+
+  if (method === 'POST' && pathname === '/reservations/excel-sync/sync-now') {
+    requireRole(currentUser, ['staff', 'cashier', 'admin']);
+    const cfg = getClientExcelSyncConfig();
+    if (!cfg.webhookUrl) {
+      return {
+        message: 'Chưa cấu hình Webhook URL. Bạn có thể bấm "Tải Excel ngay" để xuất file .xlsx hoặc dán URL Google Sheets phía dưới.',
+        config: cfg,
+      };
+    }
+    const allRows = db.reservations.map((r) => formatReservationForExcel(hydrateReservation(db, r)));
+    const result = await pushClientWebhook({
+      event: 'SYNC_ALL',
+      syncedAt: new Date().toISOString(),
+      rows: allRows,
+    });
+    return {
+      message: result.ok
+        ? `Đã gửi đồng bộ toàn bộ ${allRows.length} đơn đặt bàn sang Google Sheets / Excel Online!`
+        : `Không thể gửi sang Webhook (${result.error || 'Lỗi kết nối'}).`,
+      config: getClientExcelSyncConfig(),
     };
   }
 
@@ -479,11 +529,21 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
     const r = db.reservations.find((x) => x.id === id);
     if (!r) fail(404, 'Không tìm thấy đơn đặt bàn.');
 
+    const syncStaticEvent = (ev) => {
+      const hyd = hydrateReservation(db, r);
+      pushClientWebhook({
+        event: ev,
+        syncedAt: new Date().toISOString(),
+        row: formatReservationForExcel(hyd),
+      }).catch(() => {});
+      return hyd;
+    };
+
     if (act === 'confirm-transfer') {
       r.status = 'waiting_deposit_confirm';
       r.depositStatus = 'waiting_confirm';
       saveDB(db);
-      return { message: 'Đã ghi nhận thông báo chuyển khoản!', reservation: hydrateReservation(db, r) };
+      return { message: 'Đã ghi nhận thông báo chuyển khoản!', reservation: syncStaticEvent('TRANSFER_REPORTED') };
     }
     if (act === 'approve-deposit') {
       requireRole(currentUser, ['cashier', 'admin']);
@@ -491,14 +551,14 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
       r.depositStatus = 'paid';
       pushLog(db, currentUser, 'CONFIRM_DEPOSIT', 'Reservation', r.bookingCode, `Duyệt cọc QR ${r.depositAmount.toLocaleString('vi-VN')}đ cho đơn ${r.bookingCode}`, r.branchId);
       saveDB(db);
-      return { message: `Đã duyệt cọc cho đơn ${r.bookingCode}.`, reservation: hydrateReservation(db, r) };
+      return { message: `Đã duyệt cọc cho đơn ${r.bookingCode}.`, reservation: syncStaticEvent('DEPOSIT_CONFIRMED') };
     }
     if (act === 'check-in') {
       requireRole(currentUser, ['staff', 'admin']);
       r.status = 'checked_in';
       pushLog(db, currentUser, 'CHECK_IN', 'Reservation', r.bookingCode, `Check-in khách ${r.guestName} tại đơn ${r.bookingCode}`, r.branchId);
       saveDB(db);
-      return { message: `Check-in thành công cho đơn ${r.bookingCode}.`, reservation: hydrateReservation(db, r) };
+      return { message: `Check-in thành công cho đơn ${r.bookingCode}.`, reservation: syncStaticEvent('CHECKED_IN') };
     }
     if (act === 'complete') {
       requireRole(currentUser, ['cashier', 'admin']);
@@ -506,7 +566,7 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
       r.depositStatus = 'paid';
       pushLog(db, currentUser, 'COMPLETE_BOOKING', 'Reservation', r.bookingCode, `Hoàn tất thanh toán đơn ${r.bookingCode}`, r.branchId);
       saveDB(db);
-      return { message: `Đã hoàn tất thanh toán cho đơn ${r.bookingCode}.`, reservation: hydrateReservation(db, r) };
+      return { message: `Đã hoàn tất thanh toán cho đơn ${r.bookingCode}.`, reservation: syncStaticEvent('COMPLETED') };
     }
     if (act === 'change-table') {
       requireRole(currentUser, ['staff', 'admin']);
@@ -517,7 +577,7 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
       r.hallId = target.hallId;
       pushLog(db, currentUser, 'CHANGE_TABLE', 'Reservation', r.bookingCode, `Đổi đơn ${r.bookingCode} sang ${targetHall?.name} - Bàn ${target.tableNumber}`, r.branchId);
       saveDB(db);
-      return { message: `Đã đổi sang ${targetHall?.name} - Bàn ${target.tableNumber}.`, reservation: hydrateReservation(db, r) };
+      return { message: `Đã đổi sang ${targetHall?.name} - Bàn ${target.tableNumber}.`, reservation: syncStaticEvent('TABLE_CHANGED') };
     }
     if (act === 'cancel') {
       requireRole(currentUser, ['customer', 'admin']);
@@ -531,7 +591,7 @@ export async function handleDemoRequest(fullPath, { method = 'GET', body, token 
       }
       pushLog(db, currentUser, 'CANCEL_BOOKING', 'Reservation', r.bookingCode, `Hủy đơn đặt bàn ${r.bookingCode}`, r.branchId);
       saveDB(db);
-      return { message: 'Đã hủy đơn đặt bàn.', reservation: hydrateReservation(db, r) };
+      return { message: 'Đã hủy đơn đặt bàn.', reservation: syncStaticEvent('CANCELLED') };
     }
   }
 

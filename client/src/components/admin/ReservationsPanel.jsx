@@ -9,10 +9,14 @@ import {
   RefreshCw,
   Wine,
   X,
+  FileSpreadsheet,
+  Link2,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import StatusBadge from '../common/StatusBadge';
+import ExcelSyncModal from './ExcelSyncModal';
+import { downloadReservationsExcel } from '../../utils/excelExport';
 import { DEPOSIT_STATUS_META, formatDateVN, formatVND } from '../../utils/format';
 
 const STATUS_FILTERS = [
@@ -44,6 +48,7 @@ export default function ReservationsPanel({ branches = [] }) {
   const [moveModal, setMoveModal] = useState(null);
   const [branchHallsTables, setBranchHallsTables] = useState([]);
   const [selectedNewTableId, setSelectedNewTableId] = useState('');
+  const [excelModalOpen, setExcelModalOpen] = useState(false);
 
   const loadReservations = () => {
     setLoading(true);
@@ -124,10 +129,28 @@ export default function ReservationsPanel({ branches = [] }) {
                 : 'Toàn quyền duyệt cọc QR, Check-in, đổi bàn, hoàn tất thanh toán & hủy đơn (mọi thao tác được ghi vào Audit Log).'}
             </p>
           </div>
-          <button onClick={loadReservations} className="btn-outline-wine text-xs py-2 px-3.5">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Làm mới
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => downloadReservationsExcel(reservations)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600/90 hover:bg-emerald-500 text-white transition-colors"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              Xuất Excel (.xlsx)
+            </button>
+            <button
+              type="button"
+              onClick={() => setExcelModalOpen(true)}
+              className="btn-outline-wine text-xs py-2 px-3.5"
+            >
+              <Link2 className="w-3.5 h-3.5" />
+              Liên kết Excel tự động
+            </button>
+            <button onClick={loadReservations} className="btn-outline-wine text-xs py-2 px-3.5">
+              <RefreshCw className="w-3.5 h-3.5" />
+              Làm mới
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -406,6 +429,10 @@ export default function ReservationsPanel({ branches = [] }) {
             </div>
           </div>
         </div>
+      )}
+
+      {excelModalOpen && (
+        <ExcelSyncModal reservations={reservations} onClose={() => setExcelModalOpen(false)} />
       )}
     </div>
   );

@@ -22,3 +22,7 @@ Thumbs.db
 
 # Large raw print PDFs
 *.pdf
+
+# Local Excel export runtime files
+server/exports/*.xlsx
+server/exports/excel-sync-config.json

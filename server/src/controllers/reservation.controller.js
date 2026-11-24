@@ -2,6 +2,16 @@ const prisma = require('../lib/prisma');
 const { buildVietQR } = require('../lib/vietqr');
 const { logActivity } = require('../lib/activityLog');
 const {
+  buildExcelBuffer,
+  getSyncConfig,
+  saveSyncConfig,
+  fetchAllReservationsForExcel,
+  formatReservationRow,
+  syncLocalExcelFile,
+  pushToWebhook,
+  syncReservationEverywhere,
+} = require('../lib/excelSync');
+const {
   addHoursToTime,
   isTimeOverlapping,
   hoursUntilReservation,
@@ -243,6 +253,9 @@ async function createReservation(req, res, next) {
       });
     });
 
+    // Tu dong dong bo sang file Excel & Webhook (khong chan phan hoi)
+    syncReservationEverywhere(createdReservation, 'CREATED').catch(() => {});
+
     res.status(201).json({
       message: 'Đặt bàn thành công! Vui lòng quét mã VietQR để hoàn tất đặt cọc giữ bàn.',
       reservation: attachReservationExtras(createdReservation),
@@ -357,6 +370,8 @@ async function confirmTransfer(req, res, next) {
       include: RESERVATION_INCLUDE,
     });
 
+    syncReservationEverywhere(updated, 'TRANSFER_REPORTED').catch(() => {});
+
     res.json({
       message: 'Đã ghi nhận thông báo chuyển khoản. Thu ngân KingBeef sẽ xác nhận trong ít phút!',
       reservation: attachReservationExtras(updated),
@@ -427,6 +442,8 @@ async function cancelReservation(req, res, next) {
       `Hủy đơn đặt bàn ${updated.bookingCode} của khách ${updated.guestName} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
       updated.branchId
     );
+
+    syncReservationEverywhere(updated, 'CANCELLED').catch(() => {});
 
     res.json({
       message: 'Đã hủy đơn đặt bàn thành công.',
@@ -513,6 +530,8 @@ async function approveDeposit(req, res, next) {
       updated.branchId
     );
 
+    syncReservationEverywhere(updated, 'DEPOSIT_CONFIRMED').catch(() => {});
+
     res.json({
       message: `Đã xác nhận tiền cọc cho đơn ${updated.bookingCode}.`,
       reservation: attachReservationExtras(updated),
@@ -549,6 +568,8 @@ async function checkInReservation(req, res, next) {
       `Check-in khách ${updated.guestName} tại đơn ${updated.bookingCode} (${updated.hall.name} - Bàn ${updated.table.tableNumber})`,
       updated.branchId
     );
+
+    syncReservationEverywhere(updated, 'CHECKED_IN').catch(() => {});
 
     res.json({
       message: `Check-in thành công cho đơn ${updated.bookingCode} (Bàn ${updated.table.tableNumber}).`,
@@ -638,6 +659,8 @@ async function changeTable(req, res, next) {
       updated.branchId
     );
 
+    syncReservationEverywhere(updated, 'TABLE_CHANGED').catch(() => {});
+
     res.json({
       message: `Đã đổi đơn ${updated.bookingCode} sang ${newDesc}.`,
       reservation: attachReservationExtras(updated),
@@ -678,9 +701,85 @@ async function completeReservation(req, res, next) {
       updated.branchId
     );
 
+    syncReservationEverywhere(updated, 'COMPLETED').catch(() => {});
+
     res.json({
       message: `Đã hoàn tất thanh toán cho đơn ${updated.bookingCode}.`,
       reservation: attachReservationExtras(updated),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function exportReservationsExcel(req, res, next) {
+  try {
+    const { branchId, date, status } = req.query;
+    const where = {};
+    if (branchId && branchId !== 'all') where.branchId = Number(branchId);
+    if (date) where.reservationDate = String(date);
+    if (status && status !== 'all') where.status = String(status);
+
+    const reservations = await prisma.reservation.findMany({
+      where,
+      include: RESERVATION_INCLUDE,
+      orderBy: [{ reservationDate: 'desc' }, { startTime: 'desc' }, { createdAt: 'desc' }],
+    });
+
+    const buffer = buildExcelBuffer(reservations);
+    const today = new Date().toISOString().slice(0, 10);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="KingBeef_DatBan_${today}.xlsx"`
+    );
+    res.send(buffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getExcelSyncConfig(req, res) {
+  res.json({ config: getSyncConfig() });
+}
+
+async function updateExcelSyncConfig(req, res, next) {
+  try {
+    const { webhookUrl, autoSync } = req.body;
+    const config = saveSyncConfig({ webhookUrl, autoSync });
+    res.json({ message: 'Đã lưu cấu hình liên kết Excel / Google Sheets.', config });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function triggerExcelSyncNow(req, res, next) {
+  try {
+    const localResult = await syncLocalExcelFile();
+    const cfg = getSyncConfig();
+    let webhookResult = { skipped: true };
+
+    if (cfg.webhookUrl) {
+      const all = await fetchAllReservationsForExcel();
+      webhookResult = await pushToWebhook({
+        event: 'SYNC_ALL',
+        syncedAt: new Date().toISOString(),
+        rows: all.map(formatReservationRow),
+      });
+    }
+
+    res.json({
+      message: cfg.webhookUrl
+        ? webhookResult.ok
+          ? `Đã cập nhật file Excel cục bộ (${localResult?.count || 0} đơn) và đồng bộ thành công lên Excel Online / Google Sheets!`
+          : `Đã cập nhật file Excel cục bộ (${localResult?.count || 0} đơn), nhưng Webhook chưa phản hồi (${webhookResult.error || webhookResult.status}).`
+        : `Đã xuất & cập nhật thành công ${localResult?.count || 0} đơn vào file KingBeef_DatBan.xlsx!`,
+      localResult,
+      webhookResult,
+      config: getSyncConfig(),
     });
   } catch (err) {
     next(err);
@@ -698,4 +797,8 @@ module.exports = {
   checkInReservation,
   changeTable,
   completeReservation,
+  exportReservationsExcel,
+  getExcelSyncConfig,
+  updateExcelSyncConfig,
+  triggerExcelSyncNow,
 };
