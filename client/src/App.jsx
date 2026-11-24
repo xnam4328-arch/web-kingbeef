@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
@@ -13,10 +13,12 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 
+const Router = import.meta.env.VITE_STATIC_MODE === 'true' ? HashRouter : BrowserRouter;
+
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <div className="min-h-screen flex flex-col bg-[#0B0B0E] text-[#F5F0E6]">
           <Navbar />
           <main className="flex-1">
@@ -47,7 +49,7 @@ export default function App() {
           </main>
           <Footer />
         </div>
-      </BrowserRouter>
+      </Router>
     </AuthProvider>
   );
 }

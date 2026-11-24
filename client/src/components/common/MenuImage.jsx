@@ -57,6 +57,14 @@ function resolveFallback(src, category) {
   return CATEGORY_FALLBACKS[category] || INLINE_SVG_FALLBACK;
 }
 
+function withBaseUrl(src) {
+  if (!src) return '';
+  if (/^https?:\/\//i.test(src) || src.startsWith('data:')) return src;
+  const base = import.meta.env.BASE_URL || '/';
+  const cleaned = src.startsWith('/') ? src.slice(1) : src;
+  return `${base}${cleaned}`;
+}
+
 export default function MenuImage({ src, alt, category, className = '' }) {
   const [stage, setStage] = useState(0); // 0: anh that tu menu TB.pdf (/images/menu/*.jpg), 1: Unsplash fallback, 2: inline SVG
 
@@ -66,7 +74,7 @@ export default function MenuImage({ src, alt, category, className = '' }) {
 
   const currentSrc =
     stage === 0 && src
-      ? src
+      ? withBaseUrl(src)
       : stage <= 1
       ? resolveFallback(src, category)
       : INLINE_SVG_FALLBACK;

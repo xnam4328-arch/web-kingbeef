@@ -1,6 +1,13 @@
-const API_BASE = '/api';
+import { handleDemoRequest } from './demoApi';
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const IS_STATIC_MODE = import.meta.env.VITE_STATIC_MODE === 'true';
 
 export async function apiRequest(path, { method = 'GET', body, token } = {}) {
+  if (IS_STATIC_MODE) {
+    return handleDemoRequest(path, { method, body, token });
+  }
+
   const savedToken = token || localStorage.getItem('kingbeef_token');
   const headers = { 'Content-Type': 'application/json' };
   if (savedToken) {
