@@ -271,7 +271,11 @@ export default function ProfilePage() {
             <div className="bg-white p-3 rounded-xl flex justify-center">
               <img
                 src={qrModal.qrPayment?.qrUrl}
-                alt="VietQR Deposit"
+                alt="VietQR MB Bank - TRINH XUAN NAM"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `${import.meta.env.BASE_URL}images/vietqr-kingbeef.jpg`;
+                }}
                 className="w-60 h-60 object-contain"
               />
             </div>

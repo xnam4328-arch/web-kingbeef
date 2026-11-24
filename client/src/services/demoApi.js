@@ -41,8 +41,8 @@ function overlaps(sA, eA, sB, eB) {
 
 function buildVietQR(bookingCode, amount) {
   const bankId = 'MB';
-  const accountNo = '0909888666';
-  const accountName = 'KINGBEEF STEAK PASTA HOUSE';
+  const accountNo = '0741236901122';
+  const accountName = 'TRINH XUAN NAM';
   const transferContent = `KINGBEEF ${bookingCode}`;
   return {
     bankId,

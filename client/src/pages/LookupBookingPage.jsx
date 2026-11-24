@@ -270,7 +270,15 @@ export default function LookupBookingPage() {
                     Mã VietQR Đặt Cọc
                   </div>
                   <div className="bg-white p-2.5 rounded-xl">
-                    <img src={qr?.qrUrl} alt="VietQR" className="w-44 h-44 object-contain" />
+                    <img
+                      src={qr?.qrUrl}
+                      alt="VietQR MB Bank - TRINH XUAN NAM"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = `${import.meta.env.BASE_URL}images/vietqr-kingbeef.jpg`;
+                      }}
+                      className="w-44 h-44 object-contain"
+                    />
                   </div>
                   <div className="w-full text-[11px] space-y-1 text-[#F5F0E6]/80">
                     <div className="flex justify-between">

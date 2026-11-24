@@ -82,7 +82,15 @@ export default function Step4DepositQR({ reservation, onUpdated }) {
           </div>
 
           <div className="bg-white p-3.5 rounded-2xl shadow-xl">
-            <img src={qr?.qrUrl} alt="VietQR KingBeef" className="w-64 h-64 object-contain" />
+            <img
+              src={qr?.qrUrl}
+              alt="VietQR MB Bank - TRINH XUAN NAM"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `${import.meta.env.BASE_URL}images/vietqr-kingbeef.jpg`;
+              }}
+              className="w-64 h-64 object-contain"
+            />
           </div>
 
           <div className="w-full space-y-2 text-xs bg-[#16161C] p-4 rounded-xl border border-[#4A0E1E]">
